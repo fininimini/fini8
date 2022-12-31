@@ -1,0 +1,23 @@
+#index-body {
+    background: repeating-linear-gradient(45deg, black, black 10px, #444 10px, #444 11px);
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    height: 100vh;
+    display: flex;
+
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
+
+#index-body:not(.user-is-tabbing) button:focus,
+#index-body:not(.user-is-tabbing) select:focus,
+#index-body:not(.user-is-tabbing) input:focus,
+#index-body:not(.user-is-tabbing) textarea:focus {
+    outline: none
+}

@@ -1,0 +1,121 @@
+.main {
+    background-color: rgba(31, 31, 31, 0.8);
+    border-radius: 15px;
+    padding: 0 30px 0 30px;
+    margin: 15px;
+    height: fit-content;
+}
+
+h1 {
+    color: #ffffff;
+    font-size: 38px;
+    font-weight: 700;
+    position: relative;
+    margin-top: 8px;
+    top: 10px;
+}
+
+input {
+    border: none;
+    border-bottom: solid #8f8f8f 1px;
+    margin-bottom: 33px;
+    background: none;
+    color: #ffffff8e;
+    height: 38px;
+    width: 330px;
+    position: relative;
+    top: 8px;
+    transition: all 1s;
+}
+
+.subtitle {
+    position: absolute;
+    padding-left: 5px;
+    font-size: 13px;
+    color: #b1b1b14d;
+}
+
+#login, #register {
+    width: 150px;
+    border: none;
+    border-radius: 8px;
+    font-size: 17px;
+    transition: all 1s;
+    margin-left: 92px;
+    margin-right: 92px;
+}
+
+#login:enabled, #register:enabled {
+    box-shadow: 2px 2px 8px #38d39f70;
+    background: #38d39f;
+    color: #ffffffcc;
+    cursor: pointer;
+}
+
+#login:disabled, #register:disabled {
+    background: #333333;
+    color: #ffffff28;
+    cursor: not-allowed;
+}
+
+#submit:enabled:hover, #register:enabled:hover {
+    color: #ffffff;
+    box-shadow: none;
+}
+
+body {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+#pswd_div {
+    border: grey 1px solid;
+    border-radius: 15px;
+    margin-top: -10px;
+    margin-bottom: 15px;
+    padding: 3px 0;
+    color: rgb(163, 163, 163);
+    font-size: 15px;
+    transition: all 0.75s;
+}
+
+.pswd_req {
+    padding-left: 10px;
+    display: flex;
+    flex-direction: row;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    transition: all 0.75s;
+}
+
+.dot {
+    margin: 5px 3px 0 0;
+    background-color: grey;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    transition: all 0.75s;
+}
+
+.error_collapsed {
+    overflow: hidden;
+    height: 0;
+    transition: height 0.35s ease;
+}
+
+.error_expanded {
+    height: auto;
+    transition: height 0.35s ease;
+}
+
+
+
+
+a {
+    font-size: 12.1px;
+    cursor: pointer;
+    position: relative;
+    bottom: 17px;
+    color: #38d39fd8;
+}
