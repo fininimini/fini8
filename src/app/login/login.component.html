@@ -1,70 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
-    <body>
-        <div class="main" id="login-form">
-            <form (ngSubmit)="onSubmit($event)" method="post" autocomplete="off" enctype="application/x-www-form-urlencoded" id="form">
-                <h1>Login</h1>
 
-                <label for="login_email_input" class="subtitle">Email</label>
-                <input type="text" name="email" class="input_cred" id="login_email_input" [(ngModel)]="email" (ngModelChange)="checkCredentials(); checkEmail(email)"><br>
+<body>
+    <div class="main">
+        <form (ngSubmit)="onSubmit($event)" method="post" autocomplete="off">
+            <h1>Login</h1>
 
-                <label for="pswd_input" class="subtitle">Password</label>
-                <input type="password" name="pass" class="input_cred" id="pswd_input" [(ngModel)]="loginPswd" (ngModelChange)="checkCredentials()">
+            <label for="email" class="subtitle">Email</label>
+            <input type="text" name="email" [(ngModel)]="loginEmail" (ngModelChange)="checkCredentials()"><br>
 
-                <button type="button" (click)="revealPassword($event, '')" id="reveal_pswd">
-                    <img id="pswd_reveal_img" class="reveal_pswd_img" src="/assets/img/eye.png" alt="Reveal password button">
-                    <img id="pswd_hide_img" class="reveal_pswd_img" src="/assets/img/eye_2.png" alt="Hide password button" style="display: none;">
-                </button><br>
+            <label for="passwordInput" class="subtitle">Password</label>
+            <input type="password" name="pass" id="passwordInput" [(ngModel)]="loginPswd" (ngModelChange)="checkCredentials()">
 
-                <!-- <a href="{{url_for('app.handle_data')}}">Forgot Username or Password</a><br> -->
-                <input type="submit" name="method" value="Login" id="login" disabled>
-                <!--<div class="error">BCaaaaaaaaa! aegghEHW3ESADGD! BCaaaaaaaaa!</div>
-                <div class="success">BCaaaaaaaaa! aegghEHW3ESADGD! BCaaaaaaaaa!</div> -->
-            </form>
-        </div>
-        <div class="main" id="register-form">
-            <form (ngSubmit)="onSubmit($event)" method="post" autocomplete="off" enctype="application/x-www-form-urlencoded" id="form">
-                <h1>Register</h1>
+            <button type="button" (click)="revealPassword($event, '')" id="revealPassword">
+                <img id="revealPasswordImage" class="revealPasswordImage" src="/assets/img/eye.png" alt="Reveal password button">
+                <img id="hidePasswordImage" class="revealPasswordImage" src="/assets/img/eye_2.png" alt="Hide password button" style="display: none;">
+            </button><br>
 
-                <label for="register_email_input" class="subtitle">Email</label>
-                <input type="text" name="email" class="input_cred" id="register_email_input" [(ngModel)]="email" (blur)="checkEmail(email)" (ngModelChange)="checkEmail(email)" (focus)="checkEmail(email)"><br>
+            <input type="submit"value="Login" id="login" disabled>
+        </form>
+    </div>
+    <div class="main">
+        <form (ngSubmit)="onSubmit($event)" method="post" autocomplete="off">
+            <h1>Register</h1>
 
-                <label for="pswd_input" class="subtitle">Password</label>
-                <input type="password" name="pass" class="input_cred" id="pswd_input_reg" [(ngModel)]="registerPswd" (focus)="checkPswd(registerPswd)" (ngModelChange)="checkPswd(registerPswd)">
-
-                <button type="button" (click)="revealPassword($event, '_reg')" id="reveal_pswd_reg">
-                    <img id="pswd_reveal_img_reg" class="reveal_pswd_img" src="/assets/img/eye.png" alt="Reveal password button">
-                    <img id="pswd_hide_img_reg" class="reveal_pswd_img" src="/assets/img/eye_2.png" alt="Hide password button" style="display: none;">
-                </button><br>
-
-                <div id="pswd_div">
-                    <div class="pswd_req">
-                        <div class="dot" id="pswd_spaces"></div>
-                        Doesn't contain any spaces
-                    </div>
-                    <div class="pswd_req">
-                        <div class="dot" id="pswd_min_char"></div>
-                        At least 8 characters long
-                    </div>
-                    <div class="pswd_req">
-                        <div class="dot" id="pswd_big_char"></div>
-                        Contains an upper case letter
-                    </div>
-                    <div class="pswd_req">
-                        <div class="dot" id="pswd_sml_char"></div>
-                        Contains a lower case letter
-                    </div>
-                    <div class="pswd_req">
-                        <div class="dot" id="pswd_spc_char"></div>
-                        Contains a number or special character
-                    </div>
-                </div>
-
-                <input type="submit" name="method" value="Register" id="register" disabled>
-            </form>
-            <div id="loading_outer">
-                <div id="loading"></div>
+            <div id="emailDiv">
+                <label for="email" class="subtitle">Email</label>
+                <input type="text" name="email" id="emailInputRegistration" [(ngModel)]="registerEmail" (ngModelChange)="checkEmail(registerEmail)" (focus)="checkEmail(registerEmail)"><br>
             </div>
-        </div>
-    </body>
+
+            <label for="pass" class="subtitle">Password</label>
+            <input type="password" name="pass" id="passwordInputRegistration" [(ngModel)]="registerPswd" (focus)="checkPswd(registerPswd)" (ngModelChange)="checkPswd(registerPswd)">
+
+            <button type="button" (click)="revealPassword($event, 'Registration')" id="revealPasswordRegistration">
+                <img id="revealPasswordImageRegistration" class="revealPasswordImage" src="/assets/img/eye.png" alt="Reveal password button">
+                <img id="hidePasswordImageRegistration" class="revealPasswordImage" src="/assets/img/eye_2.png" alt="Hide password button" style="display: none;">
+            </button><br>
+
+            <div id="pswd_div">
+                <div class="pswd_req">
+                    <div class="dot" id="pswd_spaces"></div>
+                    Doesn't contain any spaces
+                </div>
+                <div class="pswd_req">
+                    <div class="dot" id="pswd_min_char"></div>
+                    At least 8 characters long
+                </div>
+                <div class="pswd_req">
+                    <div class="dot" id="pswd_big_char"></div>
+                    Contains an upper case letter
+                </div>
+                <div class="pswd_req">
+                    <div class="dot" id="pswd_sml_char"></div>
+                    Contains a lower case letter
+                </div>
+                <div class="pswd_req">
+                    <div class="dot" id="pswd_spc_char"></div>
+                    Contains a number or special character
+                </div>
+            </div>
+
+            <input type="submit" value="Register" id="register" disabled>
+        </form>
+    </div>
+    <div id="loading_outer">
+        <div id="loading"></div>
+    </div>
+</body>
+
 </html>
