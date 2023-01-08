@@ -4,12 +4,16 @@ import {
 import {
     validate
 } from "email-validator";
+import {
+    LoadingComponent
+} from "../loading/loading.component";
 
 @Component({
     selector: "app-login",
     templateUrl: "./login.component.html",
     styleUrls: ["./login.component.sass"]
 })
+
 
 export class LoginComponent {
     pswdRevealed = false;
@@ -67,7 +71,8 @@ export class LoginComponent {
     }
 
     onSubmit(event: Event): void {
-        event.preventDefault();
+        const loadingComponent = new LoadingComponent();
+        loadingComponent.loadingActivate(event);
     }
 
     loginEmail = ''
