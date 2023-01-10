@@ -1,7 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<body>
     <div id="container">
         <div class="main">
             <form (ngSubmit)="onSubmit($event)" method="post" autocomplete="off">
@@ -18,20 +16,38 @@
                     <img id="hidePasswordImage" class="revealPasswordImage" src="/assets/img/eye_2.png" alt="Hide password button" style="display: none;">
                 </button><br>
 
-                <input type="submit"value="Login" id="login" disabled>
+                <input type="submit"value="Login" id="login" style="margin-top: -8px;" disabled>
             </form>
         </div>
         <div class="main">
             <form (ngSubmit)="onSubmit($event)" method="post" autocomplete="off">
                 <h1>Register</h1>
 
-                <div id="emailDiv">
+                <div id="emailDiv"
+                    (mouseover)="checkEmail(registerEmail, true)"
+                    (mouseout)="checkEmail(registerEmail)"
+                >
                     <label for="email" class="subtitle">Email</label>
-                    <input type="text" name="email" id="emailInputRegistration" [(ngModel)]="registerEmail" (ngModelChange)="checkEmail(registerEmail)" (focus)="checkEmail(registerEmail)"><br>
+                    <input
+                        type="text"
+                        name="email"
+                        id="emailInputRegistration"
+                        [(ngModel)]="registerEmail"
+                        (ngModelChange)="checkEmail(registerEmail)"
+                        (focus)="checkEmail(registerEmail)"
+                        (blur)="checkEmail(registerEmail)"
+                    ><br>
                 </div>
 
                 <label for="pass" class="subtitle">Password</label>
-                <input type="password" name="pass" id="passwordInputRegistration" [(ngModel)]="registerPswd" (focus)="checkPswd(registerPswd)" (ngModelChange)="checkPswd(registerPswd)">
+                <input
+                    type="password"
+                    name="pass"
+                    id="passwordInputRegistration"
+                    [(ngModel)]="registerPswd"
+                    (focus)="checkPswd(registerPswd)"
+                    (ngModelChange)="checkPswd(registerPswd)"
+                >
 
                 <button type="button" (click)="revealPassword($event, 'Registration')" id="revealPasswordRegistration">
                     <img id="revealPasswordImageRegistration" class="revealPasswordImage" src="/assets/img/eye.png" alt="Reveal password button">
@@ -60,12 +76,9 @@
                         Contains a number or special character
                     </div>
                 </div>
-
-                <input type="submit" value="Register" id="register" disabled>
+                <input type="submit" value="Register" id="register" style="position: relative; bottom: 1px; margin-top: 2px;" disabled>
             </form>
         </div>
     </div>
     <app-loading></app-loading>
-</body>
-
 </html>

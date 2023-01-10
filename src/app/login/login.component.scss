@@ -3,7 +3,7 @@ h1 {
     font-size: 38px;
     font-weight: 700;
     position: relative;
-    margin-top: 8px;
+    margin-top: 15px;
     top: 10px;
 }
 
@@ -61,14 +61,14 @@ input {
 }
 
 #pswd_div {
-    border: grey 1px solid;
-    border-radius: 15px;
-    margin-top: -10px;
-    margin-bottom: 15px;
-    padding: 3px 0;
+    border-left: #8f8f8f 3px solid;
+    margin: -15px 0 15px 3px;
+    padding-bottom: 3px;
     color: rgb(163, 163, 163);
     font-size: 15px;
     transition: all 0.75s;
+    overflow: hidden;
+    max-height: 100px;
 }
 
 .pswd_req {
@@ -88,16 +88,6 @@ input {
     transition: all 0.75s;
 }
 
-.error_collapsed {
-    overflow: hidden;
-    height: 0;
-    transition: height 0.35s ease;
-}
-
-.error_expanded {
-    height: auto;
-    transition: height 0.35s ease;
-}
 
 
 

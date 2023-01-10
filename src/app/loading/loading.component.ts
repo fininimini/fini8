@@ -1,12 +1,11 @@
-import {
-    Component
-} from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
     selector: 'app-loading',
     templateUrl: './loading.component.html',
     styleUrls: ['./loading.component.sass']
 })
+
 export class LoadingComponent {
     loadingActivate(event: Event): void {
         const container: HTMLDivElement = document.getElementById("container") as HTMLDivElement;

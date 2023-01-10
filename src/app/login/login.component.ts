@@ -1,12 +1,6 @@
-import {
-    Component
-} from "@angular/core";
-import {
-    validate
-} from "email-validator";
-import {
-    LoadingComponent
-} from "../loading/loading.component";
+import { Component } from "@angular/core";
+import { validate } from "email-validator";
+import { LoadingComponent } from "../loading/loading.component";
 
 @Component({
     selector: "app-login",
@@ -35,37 +29,51 @@ export class LoginComponent {
         }
     }
 
-    displayMessage(parentName: string, message = "", error = true): void {
-        const parent: HTMLInputElement = document.getElementById(parentName) as HTMLInputElement;
-        if (error) {
-            parent.style.borderColor = "#ff4b4bd8";
-        } else {
-            parent.style.borderColor = "#00ffaad8";
-        }
-        //let messageDiv: HTMLDivElement = document.createElement("div");
-        //let target = document.getElementById("main")!;
-        //messageDiv.innerHTML = message;
-        //messageDiv.className = "error_collapsed";
-        //messageDiv.style.width = parseInt(getComputedStyle(target).width) - 25 + "px";
-        //target.appendChild(messageDiv);
-    }
-
     registerEmail = "";
     emailValid = false;
-    checkEmail(email: string) {
-        if (email.length == 0) {
-            const emailInput: HTMLInputElement = document.getElementById("emailInputRegistration") as HTMLInputElement;
-            emailInput.style.borderColor = "#8f8f8f";
-            this.emailValid = false;
-            this.checkCredentials();
-            return;
-        }
-        if (validate(email)) {
-            this.displayMessage("emailInputRegistration", "Please use a valid email address!", false);
-            this.emailValid = true;
+    checkEmail(email: string, hover = false): void {
+        const emailInput: HTMLInputElement = document.getElementById("emailInputRegistration") as HTMLInputElement;
+        const errorDiv: HTMLDivElement = document.getElementById("emailError") as HTMLDivElement;
+        const valid: boolean = validate(email);
+
+        if (errorDiv != null && !valid) {
+            if (document.activeElement == emailInput || hover) {
+                errorDiv.style.maxHeight = "100px";
+            } else {
+                errorDiv.style.maxHeight = "0";
+            }
         } else {
-            this.displayMessage("emailInputRegistration");
-            this.emailValid = false;
+            const errorDiv: HTMLDivElement = document.getElementById("emailError") as HTMLDivElement;
+
+            if (email.length == 0) {
+                emailInput.style.borderColor = "#8f8f8f";
+                if (errorDiv != null) {
+                    errorDiv.style.maxHeight = "0";
+                    setTimeout(function() {errorDiv.remove()}, 600);
+                }
+                this.emailValid = false;
+            } else if (valid) {
+                emailInput.style.borderColor = "#00ffaad8";
+                if (errorDiv != null) {
+                    errorDiv.style.maxHeight = "0";
+                    setTimeout(function() {errorDiv.remove()}, 600);
+                    this.emailValid = true;
+                }
+            } else {
+                emailInput.style.borderColor = "#ff4b4bd8";
+                if (email.length >= 6) {
+                    const parrentDiv: HTMLDivElement = document.getElementById("emailDiv") as HTMLDivElement;
+                    let errorDiv: HTMLDivElement = document.createElement("div") as HTMLDivElement;
+
+                    errorDiv.id = "emailError";
+                    errorDiv.innerHTML = '<div style="padding: 3px 0 3px 0;">Please enter a valid email address following this format: name@domain-name.domain</div>';
+                    errorDiv.setAttribute("style", `transition: max-height 0.5s ease-out; border-left: #ff4b4bd8 3px solid; background-color: #ff4b4b11; box-sizing: border-box; padding-left: 10px; position: relative; overflow: hidden; margin-left: 3px; color: #ff4b4b; max-height: 0; bottom: 15px; width: ${parseInt(getComputedStyle(parrentDiv).width) - 3}px;`);
+                    parrentDiv.appendChild(errorDiv);
+                    errorDiv = document.getElementById("emailError") as HTMLDivElement;
+                    setTimeout(function() {errorDiv.style.maxHeight = "100px";}, 10);
+                }
+                this.emailValid = false;
+            }
         }
         this.checkCredentials();
     }
