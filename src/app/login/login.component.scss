@@ -63,12 +63,11 @@ input {
 #pswd_div {
     border-left: #8f8f8f 3px solid;
     margin: -15px 0 15px 3px;
-    padding-bottom: 3px;
     color: rgb(163, 163, 163);
     font-size: 15px;
     transition: all 0.75s;
     overflow: hidden;
-    max-height: 100px;
+    max-height: 0;
 }
 
 .pswd_req {

@@ -39,41 +39,49 @@
                     ><br>
                 </div>
 
-                <label for="pass" class="subtitle">Password</label>
-                <input
-                    type="password"
-                    name="pass"
-                    id="passwordInputRegistration"
-                    [(ngModel)]="registerPswd"
-                    (focus)="checkPswd(registerPswd)"
-                    (ngModelChange)="checkPswd(registerPswd)"
+                <div
+                    (mouseenter)="checkPswd(registerPswd)"
+                    (mouseleave)="checkPswd(registerPswd, false)"
                 >
+                    <label for="pass" class="subtitle">Password</label>
+                    <input
+                        type="password"
+                        name="pass"
+                        id="passwordInputRegistration"
+                        [(ngModel)]="registerPswd"
+                        (ngModelChange)="checkPswd(registerPswd)"
+                        (focus)="checkPswd(registerPswd)"
+                        (blur)="checkPswd(registerPswd, false)"
+                    >
 
-                <button type="button" (click)="revealPassword($event, 'Registration')" id="revealPasswordRegistration">
-                    <img id="revealPasswordImageRegistration" class="revealPasswordImage" src="/assets/img/eye.png" alt="Reveal password button">
-                    <img id="hidePasswordImageRegistration" class="revealPasswordImage" src="/assets/img/eye_2.png" alt="Hide password button" style="display: none;">
-                </button><br>
+                    <button type="button" (click)="revealPassword($event, 'Registration')" id="revealPasswordRegistration">
+                        <img id="revealPasswordImageRegistration" class="revealPasswordImage" src="/assets/img/eye.png" alt="Reveal password button">
+                        <img id="hidePasswordImageRegistration" class="revealPasswordImage" src="/assets/img/eye_2.png" alt="Hide password button" style="display: none;">
+                    </button><br>
 
-                <div id="pswd_div">
-                    <div class="pswd_req">
-                        <div class="dot" id="pswd_spaces"></div>
-                        Doesn't contain any spaces
-                    </div>
-                    <div class="pswd_req">
-                        <div class="dot" id="pswd_min_char"></div>
-                        At least 8 characters long
-                    </div>
-                    <div class="pswd_req">
-                        <div class="dot" id="pswd_big_char"></div>
-                        Contains an upper case letter
-                    </div>
-                    <div class="pswd_req">
-                        <div class="dot" id="pswd_sml_char"></div>
-                        Contains a lower case letter
-                    </div>
-                    <div class="pswd_req">
-                        <div class="dot" id="pswd_spc_char"></div>
-                        Contains a number or special character
+                    <div id="pswd_div">
+                        <div style="padding-bottom: 3px;">
+                            <div class="pswd_req">
+                                <div class="dot" id="pswd_spaces"></div>
+                                Doesn't contain any spaces
+                            </div>
+                            <div class="pswd_req">
+                                <div class="dot" id="pswd_min_char"></div>
+                                At least 8 characters long
+                            </div>
+                            <div class="pswd_req">
+                                <div class="dot" id="pswd_big_char"></div>
+                                Contains an upper case letter
+                            </div>
+                            <div class="pswd_req">
+                                <div class="dot" id="pswd_sml_char"></div>
+                                Contains a lower case letter
+                            </div>
+                            <div class="pswd_req">
+                                <div class="dot" id="pswd_spc_char"></div>
+                                Contains a number or special character
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <input type="submit" value="Register" id="register" style="position: relative; bottom: 1px; margin-top: 2px;" disabled>

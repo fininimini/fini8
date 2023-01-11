@@ -61,17 +61,15 @@ export class LoginComponent {
                 }
             } else {
                 emailInput.style.borderColor = "#ff4b4bd8";
-                if (email.length >= 6) {
-                    const parrentDiv: HTMLDivElement = document.getElementById("emailDiv") as HTMLDivElement;
-                    let errorDiv: HTMLDivElement = document.createElement("div") as HTMLDivElement;
+                const parrentDiv: HTMLDivElement = document.getElementById("emailDiv") as HTMLDivElement;
+                let errorDiv: HTMLDivElement = document.createElement("div") as HTMLDivElement;
 
-                    errorDiv.id = "emailError";
-                    errorDiv.innerHTML = '<div style="padding: 3px 0 3px 0;">Please enter a valid email address following this format: name@domain-name.domain</div>';
-                    errorDiv.setAttribute("style", `transition: max-height 0.5s ease-out; border-left: #ff4b4bd8 3px solid; background-color: #ff4b4b11; box-sizing: border-box; padding-left: 10px; position: relative; overflow: hidden; margin-left: 3px; color: #ff4b4b; max-height: 0; bottom: 15px; width: ${parseInt(getComputedStyle(parrentDiv).width) - 3}px;`);
-                    parrentDiv.appendChild(errorDiv);
-                    errorDiv = document.getElementById("emailError") as HTMLDivElement;
-                    setTimeout(function() {errorDiv.style.maxHeight = "100px";}, 10);
-                }
+                errorDiv.id = "emailError";
+                errorDiv.innerHTML = '<div style="padding: 3px 0 3px 0;">Please enter a valid email address following this format: name@domain-name.domain</div>';
+                errorDiv.setAttribute("style", `transition: max-height 0.5s ease-out; border-left: #ff4b4bd8 3px solid; background-color: #ff4b4b11; box-sizing: border-box; padding-left: 10px; position: relative; overflow: hidden; margin-left: 3px; color: #ff4b4b; max-height: 0; bottom: 15px; width: ${parseInt(getComputedStyle(parrentDiv).width) - 3}px;`);
+                parrentDiv.appendChild(errorDiv);
+                errorDiv = document.getElementById("emailError") as HTMLDivElement;
+                setTimeout(function() {errorDiv.style.maxHeight = "100px";}, 10);
                 this.emailValid = false;
             }
         }
@@ -102,8 +100,9 @@ export class LoginComponent {
     loginPswd = "";
     registerPswd = "";
     pswdValid = false;
-    checkPswd(registerPswd: string): void {
+    checkPswd(registerPswd: string, hover = true): void {
         const pswdInput: HTMLInputElement = document.getElementById("passwordInputRegistration") as HTMLInputElement;
+        const pswdDiv: HTMLDivElement = document.getElementById("pswd_div") as HTMLDivElement;
         const criterias: Array < [string, boolean] > = [
             ["#pswd_spaces", registerPswd.includes(" ") == false && registerPswd.length >= 1],
             ["#pswd_min_char", registerPswd.length >= 8],
@@ -124,18 +123,27 @@ export class LoginComponent {
             }
         }
 
-        const pswdDiv: HTMLDivElement = document.getElementById("pswd_div") as HTMLDivElement;
         if (criterias.every(criteria => criteria[1] === true)) {
             pswdDiv.style.borderColor = "#00ffaad8";
             pswdInput.style.borderColor = "#00ffaad8";
+            pswdDiv.style.maxHeight = "0";
             this.pswdValid = true;
         } else if (registerPswd.length == 0) {
             pswdDiv.style.borderColor = "#8f8f8f";
             pswdInput.style.borderColor = "#8f8f8f";
+            pswdDiv.style.maxHeight = "0";
             this.pswdValid = false;
         } else {
             pswdDiv.style.borderColor = "#ff4b4bd8"
             pswdInput.style.borderColor = "#ff4b4bd8";
+            console.log('a')
+            if (document.activeElement == pswdInput || hover) {
+                pswdDiv.style.maxHeight = "100px";
+                console.log('b')
+            } else {
+                pswdDiv.style.maxHeight = "0";
+                console.log('c')
+            }
             this.pswdValid = false;
         }
         this.checkCredentials();
