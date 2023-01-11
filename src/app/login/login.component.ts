@@ -36,7 +36,7 @@ export class LoginComponent {
         const errorDiv: HTMLDivElement = document.getElementById("emailError") as HTMLDivElement;
         const valid: boolean = validate(email);
 
-        if (errorDiv != null && !valid) {
+        if (errorDiv != null && !valid && email.length != 0) {
             if (document.activeElement == emailInput || hover) {
                 errorDiv.style.maxHeight = "100px";
             } else {
