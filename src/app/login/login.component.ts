@@ -136,13 +136,10 @@ export class LoginComponent {
         } else {
             pswdDiv.style.borderColor = "#ff4b4bd8"
             pswdInput.style.borderColor = "#ff4b4bd8";
-            console.log('a')
             if (document.activeElement == pswdInput || hover) {
                 pswdDiv.style.maxHeight = "100px";
-                console.log('b')
             } else {
                 pswdDiv.style.maxHeight = "0";
-                console.log('c')
             }
             this.pswdValid = false;
         }
