@@ -4,79 +4,81 @@
         <div class="main">
             <form (ngSubmit)="onSubmit($event)" method="post" autocomplete="off">
                 <h1>Login</h1>
-
                 <label for="email" class="subtitle">Email</label>
-                <input type="text" name="email" [(ngModel)]="loginEmail" (ngModelChange)="checkCredentials()"><br>
-
+                <input type="text" name="email" style="margin-bottom: 22px;" class="emailInput" [(ngModel)]="loginEmail" (ngModelChange)="checkCredentials()"><br>
                 <label for="passwordInput" class="subtitle">Password</label>
-                <input type="password" name="pass" id="passwordInput" [(ngModel)]="loginPswd" (ngModelChange)="checkCredentials()">
-
-                <button type="button" (click)="revealPassword($event, '')" id="revealPassword">
-                    <img id="revealPasswordImage" class="revealPasswordImage" src="/assets/img/eye.png" alt="Reveal password button">
-                    <img id="hidePasswordImage" class="revealPasswordImage" src="/assets/img/eye_2.png" alt="Hide password button" style="display: none;">
-                </button><br>
-
-                <input type="submit"value="Login" id="login" style="margin-top: -8px;" disabled>
+                <div id="passwordInputDiv" class="passwordInputDiv">
+                    <input type="password" name="pass" class="pswdInput" id="passwordInput" [(ngModel)]="loginPswd" (ngModelChange)="checkCredentials()">
+                    <button type="button" (click)="revealPassword($event, '')" id="revealPassword" class="actionButton">
+                        <img id="revealPasswordImage" class="buttonImage" src="/assets/img/eye.png" alt="Reveal password button">
+                        <img id="hidePasswordImage" class="buttonImage hidePasswordImage" src="/assets/img/eye_2.png" alt="Hide password button" style="display: none;">
+                    </button>
+                </div><br>
+                <input type="submit"value="Login" id="login" class="button" style="margin-top: -8px;" disabled>
             </form>
         </div>
         <div class="main">
             <form (ngSubmit)="onSubmit($event)" method="post" autocomplete="off">
                 <h1>Register</h1>
-
-                <div id="emailDiv"
-                    (mouseover)="checkEmail(registerEmail, true)"
-                    (mouseout)="checkEmail(registerEmail)"
-                >
+                <div id="emailDiv">
                     <label for="email" class="subtitle">Email</label>
                     <input
                         type="text"
                         name="email"
                         id="emailInputRegistration"
+                        class="emailInput"
                         [(ngModel)]="registerEmail"
-                        (ngModelChange)="checkEmail(registerEmail)"
-                        (focus)="checkEmail(registerEmail)"
-                        (blur)="checkEmail(registerEmail)"
-                    ><br>
+                        (ngModelChange)="checkEmail()"
+                        (blur)="checkEmail()"
+                    >
+                    <button type="button" (click)="revealEmailMessage($event)" style="display: none;" id="revealEmail" class="actionButton" disabled>
+                        <img id="revealEmailMessage" class="buttonImage" src="/assets/img/question.png" alt="Reveal email requirements button">
+                        <img id="hideEmailMessage" class="buttonImage" src="/assets/img/question_2.png" alt="Hide email requirements button" style="display: none;">
+                    </button><br>
+                    <div id="emailError" class="Error">
+                        <div style="padding-block: 3px">
+                            Please enter a valid email address following this format: name@domain-name.domain
+                        </div>
+                    </div>
                 </div>
-
                 <label for="pass" class="subtitle">Password</label>
-                <input
-                    type="password"
-                    name="pass"
-                    id="passwordInputRegistration"
-                    [(ngModel)]="registerPswd"
-                    (focus)="checkPswd(registerPswd)"
-                    (ngModelChange)="checkPswd(registerPswd)"
+                <div
+                    id="passwordInputRegistrationDiv"
+                    style="margin-bottom: 38px;"
+                    class="passwordInputDiv"
                 >
-
-                <button type="button" (click)="revealPassword($event, 'Registration')" id="revealPasswordRegistration">
-                    <img id="revealPasswordImageRegistration" class="revealPasswordImage" src="/assets/img/eye.png" alt="Reveal password button">
-                    <img id="hidePasswordImageRegistration" class="revealPasswordImage" src="/assets/img/eye_2.png" alt="Hide password button" style="display: none;">
-                </button><br>
-
-                <div id="pswd_div">
-                    <div class="pswd_req">
-                        <div class="dot" id="pswd_spaces"></div>
-                        Doesn't contain any spaces
-                    </div>
-                    <div class="pswd_req">
-                        <div class="dot" id="pswd_min_char"></div>
-                        At least 8 characters long
-                    </div>
-                    <div class="pswd_req">
-                        <div class="dot" id="pswd_big_char"></div>
-                        Contains an upper case letter
-                    </div>
-                    <div class="pswd_req">
-                        <div class="dot" id="pswd_sml_char"></div>
-                        Contains a lower case letter
-                    </div>
-                    <div class="pswd_req">
-                        <div class="dot" id="pswd_spc_char"></div>
-                        Contains a number or special character
+                    <input
+                        type="password"
+                        name="pass"
+                        id="passwordInputRegistration"
+                        [(ngModel)]="registerPswd"
+                        (ngModelChange)="checkPswd()"
+                        (focus)="checkPswd()"
+                        (blur)="checkPswd()"
+                        class="pswdInput"
+                    >
+                    <button type="button" (click)="revealPassword($event, 'Registration')" id="revealPasswordRegistration" class="actionButton">
+                        <img id="revealPasswordImageRegistration" class="buttonImage" src="/assets/img/eye.png" alt="Reveal password button">
+                        <img id="hidePasswordImageRegistration" class="buttonImage hidePasswordImage" src="/assets/img/eye_2.png" alt="Hide password button" style="display: none;">
+                    </button><br>
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <div id="pswd_div" style="margin-top: -24px;">
+                        <div class="level" id="weakLevel"></div>
+                        <div class="level" id="fairLevel"></div>
+                        <div class="level" id="goodLevel"></div>
+                        <div class="level" id="excelentLevel"></div>
+                        <span id="levelTxt">Too Weak</span>
                     </div>
                 </div>
-                <input type="submit" value="Register" id="register" style="position: relative; bottom: 1px; margin-top: 2px;" disabled>
+                <div style="margin-top: 0; padding-top: 5px; margin-bottom: -4px;">
+                    <div id="pswdError" class="Error" style="margin-top: 3px; margin-bottom: 0;">
+                        <div style="padding-block: 3px">
+                            The password can't contain spaces!
+                        </div>
+                    </div>
+                </div>
+                <input type="submit" value="Register" id="register" class="button" style="position: relative; bottom: 1px; margin-top: 2px;" disabled>
             </form>
         </div>
     </div>
