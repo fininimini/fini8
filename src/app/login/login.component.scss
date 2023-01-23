@@ -17,7 +17,22 @@ input {
     width: 330px;
     position: relative;
     top: 8px;
-    transition: all 1s;
+    transition: border-color 1s;
+}
+
+.pswdInput {
+    position: static;
+    border: none;
+    width: 300px;
+    margin-bottom: -5px;
+}
+
+.passwordInputDiv {
+    border-bottom: solid #8f8f8f 1px;
+    margin-bottom: 16px;
+    position: relative;
+    top: 10px;
+    transition: border-color 1s;
 }
 
 .subtitle {
@@ -27,7 +42,7 @@ input {
     color: #b1b1b14d;
 }
 
-#login, #register {
+.button {
     width: 150px;
     border: none;
     border-radius: 8px;
@@ -36,20 +51,20 @@ input {
     margin-inline: 92px;
 }
 
-#login:enabled, #register:enabled {
+.button:enabled {
     box-shadow: 2px 2px 8px #38d39f70;
     background: #38d39f;
     color: #ffffffcc;
     cursor: pointer;
 }
 
-#login:disabled, #register:disabled {
+.button:disabled {
     background: #333333;
     color: #ffffff28;
     cursor: not-allowed;
 }
 
-#submit:enabled:hover, #register:enabled:hover {
+.button:enabled:hover {
     color: #ffffff;
     box-shadow: none;
 }
@@ -58,43 +73,80 @@ input {
     display: flex;
     justify-content: flex-start;
     align-items: center;
+    flex-wrap: wrap;
+}
+
+@media only screen and (orientation: landscape) {
+    #container {
+        flex-direction: row;
+    }
+}
+
+@media only screen and (orientation: portrait) {
+    #container {
+        flex-direction: column;
+    }
 }
 
 #pswd_div {
-    border-left: #8f8f8f 3px solid;
-    margin: -15px 0 15px 3px;
-    color: rgb(163, 163, 163);
+    margin: -28px 0 0 0;
     font-size: 15px;
-    transition: all 0.5s;
+    transition: max-height 0.5s;
     overflow: hidden;
     max-height: 0;
-}
-
-.pswd_req {
-    padding-left: 10px;
     display: flex;
     flex-direction: row;
-    padding-block: 2px;
-    transition: all 0.75s;
+    justify-content: space-between;
 }
 
-.dot {
-    margin: 5px 3px 0 0;
-    background-color: grey;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    transition: all 0.75s;
+#levelTxt {
+    color: #8f8f8f;
+    width: 67px;
+    display: flex;
+    justify-content: center
 }
 
+.level{
+    background-color: #8f8f8f;
+    width: 18%;
+    height: 5px;
+    margin-block: auto;
+    transition: background-color 1s;
+}
 
-
-
-
-a {
-    font-size: 12.1px;
-    cursor: pointer;
+.actionButton {
+    background-color: transparent;
+    border: none;
     position: relative;
-    bottom: 17px;
-    color: #38d39fd8;
+    top: 2px;
+    margin-right: -100px;
+}
+
+.buttonImage {
+    width: 20px;
+}
+
+.hidePasswordImage {
+    position: relative;
+    top: 2px;
+}
+
+#revealEmail {
+    top: 16px;
+    right: 30px;
+}
+
+.Error {
+    transition: max-height 0.5s ease-out;
+    border-left: #ff4b4bd8 3px solid;
+    background-color: #ff4b4b11;
+    box-sizing: border-box;
+    padding-left: 10px;
+    position: relative;
+    overflow: hidden;
+    color: #ff4b4b;
+    max-height: 0;
+    bottom: 15px;
+    width: 330px;
+    margin-block: -5px;
 }
