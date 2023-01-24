@@ -25,5 +25,5 @@ jobs:
     - name: Upload build files
       uses: actions/upload-artifact@v3
       with:
-       name: build-files
-       path: /home/runner/work/fini8/fini8
+        name: build-files
+        path: /home/runner/work/fini8/fini8
