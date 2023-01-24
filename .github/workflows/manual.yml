@@ -4,12 +4,9 @@ on:
   - workflow_dispatch
 
 jobs:
-  # This workflow contains a single job called "greet"
-  greet:
-    # The type of runner that the job will run on
+  Build:
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
