@@ -1,0 +1,29 @@
+name: Build Website
+
+on:
+    - workflow_dispatch
+
+jobs:
+    Build:
+        runs-on: ubuntu-latest
+
+    steps:
+        - name: Checkout code
+            uses: actions/checkout@v3
+
+        - name: Use Node.js v19
+            uses: actions/setup-node@v3
+            with:
+                node-version: 19
+
+        - name: Install dependencies
+            run: npm install
+
+        - name: Build Angular App
+            run: npm run build
+
+        - name: Upload build files
+            uses: actions/upload-artifact@v3
+            with:
+                name: build-files
+                path: /home/runner/work/fini8/fini8/dist/fini8
