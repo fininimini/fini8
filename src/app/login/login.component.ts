@@ -47,8 +47,8 @@ export class LoginComponent {
     checkEmail(): void {
         const emailInput = document.getElementById("emailInputRegistration") as HTMLInputElement;
         let valid = false;
-        // eslint-disable-next-line no-useless-escape
-        if (this.registerEmail && this.registerEmail.length <= 254 && /^[-!#$%&'*+\/0-9=?A-Z^_a-z{|}~](\.?[-!#$%&'*+\/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*\.?[a-zA-Z0-9])*\.[a-zA-Z](-?[a-zA-Z0-9])+$/.test(this.registerEmail)) {
+        const regex = new RegExp('^[-!#$%&\'*+\\/0-9=?^_\\p{L}{|}~](\\.?[-!#$%&\'*+\\/0-9=?^_\\p{L}`{|}~])*@[\\p{L}0-9](-*\\.?[\\p{L}0-9])*\\.[\\p{L}](-?[\\p{L}0-9])+$', 'u')
+        if (this.registerEmail && this.registerEmail.length <= 254 && regex.test(this.registerEmail)) {
             const parts = this.registerEmail.split("@");
             if(parts[0].length <= 64) {
                 const domainParts = parts[1].split(".");
@@ -82,13 +82,15 @@ export class LoginComponent {
         requirements.forEach(([valid, btn]) => btn.disabled = !valid);
     }
     checkPswd(): void {
+        const lowerRegex = new RegExp("\\p{Ll}", "u");
+        const upperRegex = new RegExp("\\p{Lu}", "u");
         const pswdInputDiv = document.getElementById("passwordInputRegistrationDiv") as HTMLDivElement;
         const pswdInput = document.getElementById("passwordInputRegistration") as HTMLInputElement;
         const criterias: Array<[boolean, number]> = [
             [this.registerPswd.length >= 8, 1],
             [this.registerPswd.length >= 10, 1],
-            [/[A-Z]/.test(this.registerPswd), 1],
-            [/[a-z]/.test(this.registerPswd), 1],
+            [upperRegex.test(this.registerPswd), 1],
+            [lowerRegex.test(this.registerPswd), 1],
             // eslint-disable-next-line no-useless-escape
             [/[`!@#$%^&*()_+\-=\[\]{};":"\\|,.<>\/?~]/.test(this.registerPswd), 1],
             [/\d/.test(this.registerPswd), 1]
