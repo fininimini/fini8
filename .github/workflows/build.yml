@@ -26,5 +26,5 @@ jobs:
         with:
           name: build-files
           path: |
-            /home/runner/work/fini8/fini8/dist/
+            /home/runner/work/fini8/fini8/dist/fini8
             /home/runner/work/fini8/fini8/server/server.js
