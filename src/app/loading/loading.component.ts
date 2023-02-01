@@ -7,8 +7,9 @@ import { Component } from '@angular/core';
 })
 
 export class LoadingComponent {
-    loadingActivate(event: Event): void {
+    loadingActivate(event: Event, action: string): void {
         const container: HTMLDivElement = document.getElementById("container") as HTMLDivElement;
+        const actionText: HTMLHeadingElement = document.getElementById("loadingAction") as HTMLHeadingElement;
         const containerStyle: CSSStyleDeclaration = getComputedStyle(container) as CSSStyleDeclaration;
         const loading: HTMLDivElement = document.getElementById("loading") as HTMLDivElement;
         const loadingParrent: HTMLDivElement = document.getElementById("loading_outer") as HTMLDivElement;
@@ -23,5 +24,6 @@ export class LoadingComponent {
 
         loadingParrent.style.display = "";
         container.style.display = "none";
+        actionText.innerHTML = action;
     }
 }

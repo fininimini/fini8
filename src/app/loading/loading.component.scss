@@ -44,3 +44,12 @@ h3 {
     75% {clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 100%)}
     100% {clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 0)}
 }
+
+.main {
+    background-color: rgba(31, 31, 31, 0.8);
+    border-radius: 15px;
+    padding: 0 30px 0 30px;
+    margin: 15px;
+    height: fit-content;
+    backdrop-filter: blur(1px);
+}

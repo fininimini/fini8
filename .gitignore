@@ -5,6 +5,7 @@
 /tmp
 /out-tsc
 /bazel-out
+/.docker/fini8
 
 # Node
 /node_modules

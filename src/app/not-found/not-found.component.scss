@@ -1,0 +1,46 @@
+h1 {
+    color: #ff4b4b;
+    font-size: 75px;
+    font-weight: 700;
+    margin: 0;
+}
+
+#container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    flex-wrap: wrap;
+    background-color: rgba(31, 31, 31, 0.8);
+    border-radius: 15px;
+    padding: 15px 30px 25px 30px;
+    margin: 15px;
+    height: fit-content;
+    backdrop-filter: blur(1px);
+    width: 450px
+}
+
+h3 {
+    margin: 0;
+    margin-block: 15px;
+    color: #ff4b4b;
+    text-align:center;
+    position: relative;
+}
+
+img {
+    margin-bottom: 15px;
+}
+
+button {
+    border: none;
+    height: 38px;
+    width: 150px;
+    border-radius: 8px;
+    font-size: 17px;
+    transition: all 1s;
+    box-shadow: 2px 2px 8px #38d39f70;
+    background: #38d39f;
+    color: #ffffffcc;
+    cursor: pointer;
+}

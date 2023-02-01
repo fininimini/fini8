@@ -150,3 +150,12 @@ input {
     width: 330px;
     margin-block: -5px;
 }
+
+.main {
+    background-color: rgba(31, 31, 31, 0.8);
+    border-radius: 15px;
+    padding: 0 30px 0 30px;
+    margin: 15px;
+    height: fit-content;
+    backdrop-filter: blur(1px);
+}

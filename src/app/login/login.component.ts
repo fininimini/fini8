@@ -1,5 +1,4 @@
 import { Component } from "@angular/core";
-import { validate } from "email-validator";
 import { LoadingComponent } from "../loading/loading.component";
 
 @Component({
@@ -47,7 +46,17 @@ export class LoginComponent {
     }
     checkEmail(): void {
         const emailInput = document.getElementById("emailInputRegistration") as HTMLInputElement;
-        const valid = validate(this.registerEmail);
+        let valid = false;
+        const regex = new RegExp('^[-!#$%&\'*+\\/0-9=?^_\\p{L}{|}~](\\.?[-!#$%&\'*+\\/0-9=?^_\\p{L}`{|}~])*@[\\p{L}0-9](-*\\.?[\\p{L}0-9])*\\.[\\p{L}](-?[\\p{L}0-9])+$', 'u')
+        if (this.registerEmail && this.registerEmail.length <= 254 && regex.test(this.registerEmail)) {
+            const parts = this.registerEmail.split("@");
+            if(parts[0].length <= 64) {
+                const domainParts = parts[1].split(".");
+                if(!domainParts.some(function(part) {return part.length > 63})) {
+                    valid = true;
+                }
+            }
+        }
         if (this.registerEmail.length > 0) {
             this.emailValid = valid;
             emailInput.style.borderColor = valid ? "#00ffaad8" : "#ff4b4bd8";
@@ -59,9 +68,9 @@ export class LoginComponent {
         }
         this.checkCredentials();
     }
-    onSubmit(event: Event): void {
+    onSubmit(event: Event, action: string): void {
         const loadingComponent = new LoadingComponent();
-        loadingComponent.loadingActivate(event);
+        loadingComponent.loadingActivate(event, action);
     }
     checkCredentials(): void {
         const registerBtn = document.getElementById("register") as HTMLButtonElement;
@@ -73,13 +82,15 @@ export class LoginComponent {
         requirements.forEach(([valid, btn]) => btn.disabled = !valid);
     }
     checkPswd(): void {
+        const lowerRegex = new RegExp("\\p{Ll}", "u");
+        const upperRegex = new RegExp("\\p{Lu}", "u");
         const pswdInputDiv = document.getElementById("passwordInputRegistrationDiv") as HTMLDivElement;
         const pswdInput = document.getElementById("passwordInputRegistration") as HTMLInputElement;
         const criterias: Array<[boolean, number]> = [
             [this.registerPswd.length >= 8, 1],
             [this.registerPswd.length >= 10, 1],
-            [/[A-Z]/.test(this.registerPswd), 1],
-            [/[a-z]/.test(this.registerPswd), 1],
+            [upperRegex.test(this.registerPswd), 1],
+            [lowerRegex.test(this.registerPswd), 1],
             // eslint-disable-next-line no-useless-escape
             [/[`!@#$%^&*()_+\-=\[\]{};":"\\|,.<>\/?~]/.test(this.registerPswd), 1],
             [/\d/.test(this.registerPswd), 1]
@@ -105,6 +116,7 @@ export class LoginComponent {
             levelElements.forEach((elem, index) => elem.style.backgroundColor = level >= index + 1 ? levels[level]["color"] : "#8f8f8f");
         }
         if (this.registerPswd.length === 0) {
+            this.pswdValid = false;
             if (document.activeElement === pswdInput) {
                 levelDispaly(0);
             } else {
