@@ -26,4 +26,6 @@ jobs:
             uses: actions/upload-artifact@v3
             with:
                 name: build-files
-                path: /home/runner/work/fini8/fini8/dist/fini8
+                path: |
+                    /home/runner/work/fini8/fini8/dist/
+                    /home/runner/work/fini8/fini8/server/server.js
