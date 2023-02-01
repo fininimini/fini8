@@ -21,10 +21,11 @@ jobs:
       - name: Build Angular App
         run: npm run build
 
+      - name: Move app files
+        run: mv /home/runner/work/fini8/fini8/dist/fini8 /home/runner/work/fini8/fini8/server
+
       - name: Upload build files
         uses: actions/upload-artifact@v3
         with:
           name: build-files
-          path: |
-            /home/runner/work/fini8/fini8/dist/fini8
-            /home/runner/work/fini8/fini8/server/server.js
+          path: /home/runner/work/fini8/fini8/server
