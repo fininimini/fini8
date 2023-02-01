@@ -45,5 +45,6 @@ jobs:
       - name: Build and push docker
         uses: docker/build-push-action@v4
         with:
+          context: /home/runner/work/fini8/fini8/server
           push: false
           tags: fininimini/website:latest
