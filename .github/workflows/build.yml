@@ -1,14 +1,14 @@
 name: Build Website
 
 on:
-  - push:
-      branches:
-        - master
-  - pull_request:
-      branches:
-        - master
-      types: [closed]
-  - workflow_dispatch
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+    types: [closed]
+  workflow_dispatch:
 
 jobs:
   Build:
