@@ -22,19 +22,21 @@
                 <h1>Register</h1>
                 <div id="emailDiv">
                     <label for="email" class="subtitle">Email</label>
-                    <input
-                        type="text"
-                        name="email"
-                        id="emailInputRegistration"
-                        class="emailInput"
-                        [(ngModel)]="registerEmail"
-                        (ngModelChange)="checkEmail()"
-                        (blur)="checkEmail()"
-                    >
-                    <button type="button" (click)="revealEmailMessage($event)" style="display: none;" id="revealEmail" class="actionButton" disabled>
-                        <img id="revealEmailMessage" class="buttonImage" src="/assets/img/question.png" alt="Reveal email requirements button">
-                        <img id="hideEmailMessage" class="buttonImage" src="/assets/img/question_2.png" alt="Hide email requirements button" style="display: none;">
-                    </button><br>
+                    <div class="passwordInputDiv" style="margin-bottom: 17px;" id="emailInputRegistration">
+                        <input
+                            type="text"
+                            name="email"
+                            class="emailInput pswdInput"
+                            [(ngModel)]="registerEmail"
+                            (ngModelChange)="checkEmail()"
+                            (blur)="checkEmail()"
+                            style="position: static; margin-bottom: -5px; border: none;"
+                        >
+                        <button type="button" (click)="revealEmailMessage($event)" style="display: none;" id="revealEmail" class="actionButton" disabled>
+                            <img id="revealEmailMessage" class="buttonImage" src="/assets/img/question.png" alt="Reveal email requirements button">
+                            <img id="hideEmailMessage" class="buttonImage" src="/assets/img/question_2.png" alt="Hide email requirements button" style="display: none;">
+                        </button>
+                    </div><br>
                     <div id="emailError" class="Error">
                         <div style="padding-block: 3px">
                             Please enter a valid email address following this format: name@domain-name.domain
