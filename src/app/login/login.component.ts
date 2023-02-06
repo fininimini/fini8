@@ -1,4 +1,5 @@
 import { Component } from "@angular/core";
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { LoadingComponent } from "../loading/loading.component";
 
 @Component({
@@ -68,9 +69,13 @@ export class LoginComponent {
         }
         this.checkCredentials();
     }
+    constructor(private http: HttpClient) {}
     onSubmit(event: Event, action: string): void {
         const loadingComponent = new LoadingComponent();
         loadingComponent.loadingActivate(event, action);
+        const httpOptions = {headers: new HttpHeaders({'Content-Type': 'application/json'})};
+        const body = {type: "login", email: this.loginEmail, pswd: this.loginPswd};
+        this.http.post('http://127.0.0.1:8080/handle_data', body, httpOptions).subscribe(response => console.log(response));
     }
     checkCredentials(): void {
         const registerBtn = document.getElementById("register") as HTMLButtonElement;
