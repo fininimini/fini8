@@ -2,13 +2,15 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const { MongoClient } = require('mongodb');
-const client = new MongoClient('mongodb://advanced_login_program:q3zXflirw4V%40W9U1AU%23%5ED4%253@dono-01.danbot.host:1473/');
 
 
 const port = process.env.PORT || 8080;
-const dir = __dirname + "/fini8"
+const dir = __dirname + "/fini8";
+const mongoURI = 'mongodb://advanced_login_program:q3zXflirw4V%40W9U1AU%23%5ED4%253@dono-01.danbot.host:1473/';
+
 
 const app = express();
+const mongoClient = new MongoClient(mongoURI);
 
 app.use(bodyParser.json());
 app.use((req, res, next) => {
@@ -37,19 +39,19 @@ app.get('/favicon.ico', (req, res) => {
 
 app.post('/handle_data', async (req, res) => {
     if (req.body["type"] == "login") {
-        if (!["email", "pswd"].every(key => req.body["data"].hasOwnProperty(key))) {
-            res.status(400).send('Bad Request')
-            return
+        if (!req.body.hasOwnProperty("data") && !["email", "pswd"].every(key => req.body["data"].hasOwnProperty(key))) {
+            res.status(400).send('Bad Request');
+            return;
         }
         try {
-            await client.connect()
+            await mongoClient.connect();
         } catch (error) {
             console.error('Error: MongoDB connection refused');
-            res.status(503).json({ error: 503 });
-            return
+            res.status(503).json({ error: 503, message: "Database connection failed"});
+            return;
         }
-        const user = await client.db("Website").collection('Users').findOne({email: req.body["data"]["email"]});
-        await client.close()
+        const user = await mongoClient.db("Website").collection('Users').findOne({email: req.body["data"]["email"]});
+        await mongoClient.close();
         if (user === null) {
             res.json({ accepted: false, message: "Invalid credentials" });
         } else if (user["email"] === req.body["data"]["email"] && user["pswd"] === req.body["data"]["pswd"]) {
