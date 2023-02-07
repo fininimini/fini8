@@ -74,7 +74,7 @@ export class LoginComponent {
         const loadingComponent = new LoadingComponent();
         loadingComponent.loadingActivate(event, action);
         const httpOptions = {headers: new HttpHeaders({'Content-Type': 'application/json'})};
-        const body = {type: "login", email: this.loginEmail, pswd: this.loginPswd};
+        const body = {type: "login", data: {email: this.loginEmail, pswd: this.loginPswd}};
         this.http.post('http://127.0.0.1:8080/handle_data', body, httpOptions).subscribe(response => console.log(response));
     }
     checkCredentials(): void {
