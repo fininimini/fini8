@@ -44,11 +44,11 @@ app.post('/handle_data', async (req, res) => {
             res.status(503).json({ error: 503 });
             return
         }
-        const user = await client.db("Website").collection('Users').findOne({email: req.body["email"]});
+        const user = await client.db("Website").collection('Users').findOne({email: req.body["data"]["email"]});
         await client.close()
         if (user === null) {
             res.json({ accepted: false, message: "Invalid credentials" });
-        } else if (user["email"] === req.body["email"] && user["pswd"] === req.body["pswd"]) {
+        } else if (user["email"] === req.body["data"]["email"] && user["pswd"] === req.body["data"]["pswd"]) {
             res.json({ accepted: true });
         } else {
             res.json({ accepted: false, message: "Invalid credentials" });
