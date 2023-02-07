@@ -37,6 +37,10 @@ app.get('/favicon.ico', (req, res) => {
 
 app.post('/handle_data', async (req, res) => {
     if (req.body["type"] == "login") {
+        if (!["email", "pswd"].every(key => req.body["data"].hasOwnProperty(key))) {
+            res.status(400).send('Bad Request')
+            return
+        }
         try {
             await client.connect()
         } catch (error) {
