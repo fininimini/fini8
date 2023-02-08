@@ -15,12 +15,8 @@ h3 {
 
 #loading {
     border-radius: 50%;
-    position: relative;
     animation: rotate 1s linear infinite;
-}
-
-#loading_middle {
-    margin: 0 30px 30px 30px;
+    margin-inline: -14px;
 }
 
 #loading::before {
@@ -31,18 +27,19 @@ h3 {
     border-radius: 50%;
     border: 7px solid #00ffaa;
     animation: prixClipFix 2s linear infinite;
+    animation-name: prixClipFix;
 }
 
 @keyframes rotate {
-    100% {transform: rotate(360deg)}
+    100% {transform: rotate(360deg)};
 }
 
 @keyframes prixClipFix {
-    0% {clip-path: polygon(50% 50%, 0 0, 0 0, 0 0, 0 0, 0 0)}
-    25% {clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 0, 100% 0, 100% 0)}
-    50% {clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 100% 100%, 100% 100%)}
-    75% {clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 100%)}
-    100% {clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 0)}
+    0% {clip-path: polygon(50% 50%, 0 0, 0 0, 0 0, 0 0, 0 0)};
+    25% {clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 0, 100% 0, 100% 0)};
+    50% {clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 100% 100%, 100% 100%)};
+    75% {clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 100%)};
+    100% {clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 0)};
 }
 
 .main {
@@ -50,6 +47,6 @@ h3 {
     border-radius: 15px;
     padding: 0 30px 0 30px;
     margin: 15px;
-    height: fit-content;
+    height: 234.4px;
     backdrop-filter: blur(1px);
 }

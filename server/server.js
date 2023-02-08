@@ -13,33 +13,15 @@ const app = express();
 const mongoClient = new MongoClient(mongoURI);
 
 app.use(bodyParser.json());
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'GET, POST');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    if (req.method === 'OPTIONS') {
-        res.header('Access-Control-Allow-Methods', 'GET, POST');
-        return res.status(200).json({});
-    }
-    next();
-});
 
-app.get('/', (req, res) => {
-    res.sendFile(dir + '/index.html');
-});
-app.get('/login', (req, res) => {
-    res.sendFile(dir + '/index.html');
-});
-app.get('/404', (req, res) => {
-    res.sendFile(dir + '/index.html');
-});
-app.get('/favicon.ico', (req, res) => {
-    res.sendFile(dir + '/favicon.ico');
-});
+app.get('/', (req, res) => res.sendFile(dir + '/index.html'));
+app.get('/login', (req, res) => res.sendFile(dir + '/index.html'));
+app.get('/404', (req, res) => res.sendFile(dir + '/index.html'));
+app.get('/favicon.ico', (req, res) => res.sendFile(dir + '/favicon.ico'));
 
 app.post('/handle_data', async (req, res) => {
     if (req.body["type"] == "login") {
-        if (!req.body.hasOwnProperty("data") && !["email", "pswd"].every(key => req.body["data"].hasOwnProperty(key))) {
+        if (!req.body.hasOwnProperty("data") || !["email", "pswd"].every(key => req.body["data"].hasOwnProperty(key))) {
             res.status(400).send('Bad Request');
             return;
         }
@@ -53,11 +35,11 @@ app.post('/handle_data', async (req, res) => {
         const user = await mongoClient.db("Website").collection('Users').findOne({email: req.body["data"]["email"]});
         await mongoClient.close();
         if (user === null) {
-            res.json({ accepted: false, message: "Invalid credentials" });
+            res.status(200).json({ accepted: false, message: "Invalid credentials" });
         } else if (user["email"] === req.body["data"]["email"] && user["pswd"] === req.body["data"]["pswd"]) {
-            res.json({ accepted: true });
+            res.status(200).json({ accepted: true });
         } else {
-            res.json({ accepted: false, message: "Invalid credentials" });
+            res.status(200).json({ accepted: false, message: "Invalid credentials" });
         }
     } else {
         await res.status(405).send('Data Handling Method Not Allowed');
@@ -67,10 +49,6 @@ app.post('/handle_data', async (req, res) => {
 app.use('/staticAssets', express.static(dir));
 app.use('/assets', express.static(dir + "/assets"));
 
-app.use((req, res, next) => {
-    res.status(404).redirect("404")
-})
+app.use((req, res, next) => res.status(404).redirect("404"));
 
-app.listen(port, () => {
-    console.log('Server running on port ' + port);
-});
+app.listen(port, () => console.log('Server running on port ' + port));
