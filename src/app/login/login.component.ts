@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 import { Component } from "@angular/core";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { LoadingComponent } from "../loading/loading.component";
@@ -17,6 +18,7 @@ export class LoginComponent {
 
     emailValid = false;
     pswdValid = false;
+    pswdHadSpaces = false;
     pswdRevealed: {[name: string]: boolean} = {"Registration": false, "Login": false};
 
     emailMessageToggled = false;
@@ -96,16 +98,16 @@ export class LoginComponent {
         requirements.forEach(([valid, btn]) => btn.disabled = !valid);
     }
     checkPswd(): void {
-        const lowerRegex = new RegExp("\\p{Ll}", "u");
-        const upperRegex = new RegExp("\\p{Lu}", "u");
         const pswdInputDiv = document.getElementById("passwordInputRegistrationDiv") as HTMLDivElement;
         const pswdInput = document.getElementById("passwordInputRegistration") as HTMLInputElement;
+        const pswdError = document.getElementById("pswdError") as HTMLDivElement;
+        const pswdDiv = document.getElementById("pswd_div") as HTMLDivElement
+        const spaces = this.registerPswd.includes(" ")
         const criterias: Array<[boolean, number]> = [
             [this.registerPswd.length >= 8, 1],
             [this.registerPswd.length >= 10, 1],
-            [upperRegex.test(this.registerPswd), 1],
-            [lowerRegex.test(this.registerPswd), 1],
-            // eslint-disable-next-line no-useless-escape
+            [(new RegExp("\\p{Lu}", "u")).test(this.registerPswd), 1],
+            [(new RegExp("\\p{Ll}", "u")).test(this.registerPswd), 1],
             [/[`!@#$%^&*()_+\-=\[\]{};":"\\|,.<>\/?~]/.test(this.registerPswd), 1],
             [/\d/.test(this.registerPswd), 1]
         ];
@@ -116,8 +118,6 @@ export class LoginComponent {
             3: {"color": "#00FFAAd8", "text": "Good"},
             4: {"color": "#00FFAAd8", "text": "Excelent"}
         };
-        let score = 0;
-        criterias.forEach(element => {if(element[0]) score += element[1]});
         const levelDispaly = (level: number): void => {
             pswdInputDiv.style.borderColor = levels[level]["color"];
             (document.getElementById("levelTxt") as HTMLSpanElement).innerHTML = levels[level]["text"]
@@ -129,6 +129,7 @@ export class LoginComponent {
             ];
             levelElements.forEach((elem, index) => elem.style.backgroundColor = level >= index + 1 ? levels[level]["color"] : "#8f8f8f");
         }
+        let score = 0; criterias.forEach(element => {if(element[0]) score += element[1]});
         if (this.registerPswd.length === 0) {
             this.pswdValid = false;
             if (document.activeElement === pswdInput) levelDispaly(0);
@@ -140,12 +141,14 @@ export class LoginComponent {
             levelDispaly(0);
             this.pswdValid = false;
         }
-        (document.getElementById("pswd_div") as HTMLDivElement).style.maxHeight = (this.pswdValid || this.registerPswd.length === 0) && document.activeElement !== pswdInput ? "0" : "100px";
-        if (this.registerPswd.includes(" ")) {
-            (document.getElementById("pswdError") as HTMLDivElement).style.maxHeight = "100px";
-            pswdInputDiv.style.borderColor = "#ff4b4bd8";
+        pswdDiv.style.transition = spaces || this.pswdHadSpaces ? "none" : "";
+        pswdError.style.maxHeight = spaces ? "100px" : "";
+        if (spaces) {
             this.pswdValid = false;
-        } else (document.getElementById("pswdError") as HTMLDivElement).style.maxHeight = "0";
+            pswdInputDiv.style.borderColor = levels[0]["color"]
+        }
+        pswdDiv.style.maxHeight = (this.pswdValid || this.registerPswd.length === 0) && document.activeElement !== pswdInput || spaces ? "0" : "100px";
         this.checkCredentials();
+        this.pswdHadSpaces = spaces;
     }
 }
