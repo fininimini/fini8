@@ -13,6 +13,15 @@ const app = express();
 const mongoClient = new MongoClient(mongoURI);
 
 app.use(bodyParser.json());
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    if (req.method === 'OPTIONS') {
+        return res.status(200).json({});
+    }
+    next();
+});
 
 app.get('/', (req, res) => res.sendFile(dir + '/index.html'));
 app.get('/login', (req, res) => res.sendFile(dir + '/index.html'));

@@ -2,7 +2,7 @@
 <html lang="en">
     <div id="container">
         <div class="main">
-            <form (ngSubmit)="onSubmit($event, 'Logging In...')" method="post" autocomplete="off">
+            <form (ngSubmit)="onSubmit($event, 'Logging In...')" autocomplete="off">
                 <h1>Login</h1>
                 <label for="email" class="subtitle">Email</label>
                 <input type="text" name="email" style="margin-bottom: 22px;" class="emailInput" [(ngModel)]="loginEmail" (ngModelChange)="checkCredentials()"><br>
@@ -18,7 +18,7 @@
             </form>
         </div>
         <div class="main">
-            <form (ngSubmit)="onSubmit($event, 'Registering...')" method="post" autocomplete="off">
+            <form (ngSubmit)="onSubmit($event, 'Registering...')" autocomplete="off">
                 <h1>Register</h1>
                 <div id="emailDiv">
                     <label for="email" class="subtitle">Email</label>
