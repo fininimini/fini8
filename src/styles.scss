@@ -2,11 +2,12 @@
     background: repeating-linear-gradient(45deg, black, black 10px, #444 10px, #444 11px);
     font-family: -apple-system, BlinkMacSystemFont, sans-serif;
     overflow: hidden;
-    width: 100%;
-    height: 100vh;
+    width: 100dvw;
+    height: 100dvh;
     display: flex;
     justify-content: center;
     align-items: center;
+    margin: 0;
 
     -webkit-user-select: none;
     -khtml-user-select: none;
@@ -14,6 +15,8 @@
     -ms-user-select: none;
     -o-user-select: none;
     user-select: none;
+    overflow-x: auto;
+    overflow-y: auto;
 }
 
 #index-background:not(.user-is-tabbing) button:focus,
@@ -24,9 +27,10 @@
 }
 
 #index-body {
+    width: 100dvw;
+    height: 100dvh;
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow-x: auto;
-    overflow-y: auto;
+
 }
