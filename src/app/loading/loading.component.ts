@@ -24,14 +24,9 @@ export class LoadingComponent {
     }
 
     loadingStop(): void {
-        const loading = document.getElementById("loading") as HTMLDivElement;
         const loadingParrent = document.getElementById("loading_outer") as HTMLDivElement;
         const container = document.getElementById("container") as HTMLDivElement;
-        loading.addEventListener('animationiteration', (event) => {
-            if (event.animationName.endsWith("prixClipFix")) {
-                loadingParrent.style.display = "none";
-                container.style.display = "";
-            }
-        })
+        loadingParrent.style.display = "none";
+        container.style.display = "";
     }
 }

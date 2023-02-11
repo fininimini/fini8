@@ -91,20 +91,35 @@ export class LoginComponent {
         }
         this.checkCredentials();
     }
-    onSubmit(event: Event, action: string): void {
+    onSubmit(event: Event, type: string): void {
         const loadingComponent = new LoadingComponent();
-        loadingComponent.loadingActivate(event, action);
         const httpOptions = {headers: new HttpHeaders({"Content-Type": "application/json"})};
-        const body = {type: "login", data: {email: this.loginEmail, pswd: this.loginPswd}};
-        this.http.post<{status: number, accepted: boolean, message?: string}>("http://127.0.0.1:8080/handle_data", body, httpOptions).subscribe((response) => {
-            loadingComponent.loadingStop();
-            const message = response.status === 503 ?
-                "Sorry, an internal service is currently down. Our team is working on a resolution, and it should be back up soon. Please try again later." :
-                response.status === 401 ? "Invalid credentials! Please try again.":
-                response.status === 200 && response.accepted ? "Successfully logged in!":
-                "An unknown error occurred! Please try again later."
-            this.addNotification(message, response.accepted ? "success" : "error");
-        })
+        const actions: {[type: string]: string} = {login: "Logging In...", register: "Registering..."}
+
+        if (type === "login") {
+            const body = {type: "login", data: {email: this.loginEmail, pswd: this.loginPswd}};
+            this.http.post<{status: number, accepted: boolean, message?: string}>("http://127.0.0.1:8080/handle_data", body, httpOptions).subscribe((response) => {
+                loadingComponent.loadingStop();
+                const message = response.status === 503 ?
+                    "Sorry, an internal service is currently down. Our team is working on a resolution, and it should be back up soon. Please try again later." :
+                    response.status === 401 ? "Invalid credentials! Please try again." :
+                    response.status === 200 && response.accepted ? "Successfully logged in!" :
+                    "An unknown error occurred! Please try again later."
+                this.addNotification(message, response.accepted ? "success" : "error");
+            })
+        } else if (type === "register") {
+            const body = {type: "register", data: {email: this.registerEmail, pswd: this.registerPswd}};
+            this.http.post<{status: number, accepted: boolean, message?: string}>("http://127.0.0.1:8080/handle_data", body, httpOptions).subscribe((response) => {
+                loadingComponent.loadingStop();
+                const message = response.status === 503 ?
+                    "Sorry, an internal service is currently down. Our team is working on a resolution, and it should be back up soon. Please try again later." :
+                    response.status === 409 ? "A user with the specified email already exists. Please use a different email address." :
+                    response.status === 201 && response.accepted ? "Successfully registered! You can log in now." :
+                    "An unknown error occurred! Please try again later."
+                this.addNotification(message, response.accepted ? "success" : "error");
+            })
+        }
+        loadingComponent.loadingActivate(event, actions[type]);
     }
     checkCredentials(): void {
         const registerBtn = document.getElementById("register") as HTMLButtonElement;
