@@ -84,11 +84,10 @@ input {
     #container {
         flex-direction: row;
     }
-}
-
-@media only screen and (orientation: portrait) {
-    #container {
-        flex-direction: column;
+    #notificationContainer {
+        position: fixed;
+        right: 10px;
+        bottom: 10px;
     }
 }
 
@@ -161,4 +160,11 @@ input {
     margin: 15px;
     height: fit-content;
     backdrop-filter: blur(1px);
+}
+
+#notificationContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    height: fit-content;
 }

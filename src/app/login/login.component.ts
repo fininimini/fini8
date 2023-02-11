@@ -2,6 +2,7 @@
 import { Component } from "@angular/core";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { LoadingComponent } from "../loading/loading.component";
+import { v4 as uuidv4 } from 'uuid';
 
 @Component({
     selector: "app-login",
@@ -12,17 +13,27 @@ import { LoadingComponent } from "../loading/loading.component";
 export class LoginComponent {
     loginEmail = "";
     loginPswd = "";
-
     registerEmail = "";
     registerPswd = "";
-
-    emailValid = false;
-    pswdValid = false;
-    pswdHadSpaces = false;
+    valid = {email: false, pswd: false};
     pswdRevealed: {[name: string]: boolean} = {"Registration": false, "Login": false};
+    notifications: Array<{message: string, id: string, type: string}> = [];
+    errors = {emailMessageToggled: false, pswdHadSpaces: false};
 
-    emailMessageToggled = false;
-
+    constructor(private http: HttpClient) {}
+    removeNotification(id: string): void {
+        const notification = document.getElementById(id) as HTMLDivElement;
+        notification.classList.add("slideOutAnimation");
+        setTimeout(() => {
+            this.notifications = this.notifications.filter(notification => {
+                return !notification.id.includes(id);
+            });
+        }, 300)
+    }
+    addNotification(message: string, type: string): void {
+        if (this.notifications.length >= 4) this.removeNotification(this.notifications[0].id)
+        this.notifications.push({message: message, id: uuidv4(), type: type });
+    }
     revealPassword(event: Event, subID: string): void {
         event.preventDefault();
         const reveal = document.getElementById("revealPasswordImage" + subID) as HTMLImageElement;
@@ -45,17 +56,17 @@ export class LoginComponent {
         emailButton.style.display = hide ? "none" : "";
         emailInput.style.width = hide ? "330px" : "300px";
         if (toggle) {
-            revealImg.style.display = this.emailMessageToggled ? "" : "none";
-            hideImg.style.display = this.emailMessageToggled ? "none" : "";
-            errorDiv.style.maxHeight = this.emailMessageToggled ? "0" : "100px";
-            this.emailMessageToggled = !this.emailMessageToggled
+            revealImg.style.display = this.errors.emailMessageToggled ? "" : "none";
+            hideImg.style.display = this.errors.emailMessageToggled ? "none" : "";
+            errorDiv.style.maxHeight = this.errors.emailMessageToggled ? "0" : "100px";
+            this.errors.emailMessageToggled = !this.errors.emailMessageToggled
             return;
         }
         if (hide) {
             revealImg.style.display = "";
             hideImg.style.display = "none";
             errorDiv.style.maxHeight = "0";
-            this.emailMessageToggled = false;
+            this.errors.emailMessageToggled = false;
         }
     }
     checkEmail(): void {
@@ -70,29 +81,36 @@ export class LoginComponent {
             }
         }
         if (this.registerEmail.length > 0) {
-            this.emailValid = valid;
+            this.valid.email = valid;
             emailInput.style.borderColor = valid ? "#00ffaad8" : "#ff4b4bd8";
             this.revealEmailMessage(null, false, valid);
         } else {
-            this.emailValid = false;
+            this.valid.email = false;
             emailInput.style.borderColor = "#8f8f8f";
             this.revealEmailMessage(null, false, true);
         }
         this.checkCredentials();
     }
-    constructor(private http: HttpClient) {}
     onSubmit(event: Event, action: string): void {
         const loadingComponent = new LoadingComponent();
         loadingComponent.loadingActivate(event, action);
         const httpOptions = {headers: new HttpHeaders({"Content-Type": "application/json"})};
         const body = {type: "login", data: {email: this.loginEmail, pswd: this.loginPswd}};
-        this.http.post("http://127.0.0.1:8080/handle_data", body, httpOptions).subscribe(() => loadingComponent.loadingStop());
+        this.http.post<{status: number, accepted: boolean, message?: string}>("http://127.0.0.1:8080/handle_data", body, httpOptions).subscribe((response) => {
+            loadingComponent.loadingStop();
+            const message = response.status === 503 ?
+                "Sorry, an internal service is currently down. Our team is working on a resolution, and it should be back up soon. Please try again later." :
+                response.status === 401 ? "Invalid credentials! Please try again.":
+                response.status === 200 && response.accepted ? "Successfully logged in!":
+                "An unknown error occurred! Please try again later."
+            this.addNotification(message, response.accepted ? "success" : "error");
+        })
     }
     checkCredentials(): void {
         const registerBtn = document.getElementById("register") as HTMLButtonElement;
         const loginBtn = document.getElementById("login") as HTMLButtonElement;
         const requirements: Array<[boolean, HTMLButtonElement]> = [
-            [(this.pswdValid && this.emailValid), registerBtn],
+            [(this.valid.pswd && this.valid.email), registerBtn],
             [this.loginPswd.length > 0 && this.loginEmail.length > 0, loginBtn]
         ];
         requirements.forEach(([valid, btn]) => btn.disabled = !valid);
@@ -131,24 +149,24 @@ export class LoginComponent {
         }
         let score = 0; criterias.forEach(element => {if(element[0]) score += element[1]});
         if (this.registerPswd.length === 0) {
-            this.pswdValid = false;
+            this.valid.pswd = false;
             if (document.activeElement === pswdInput) levelDispaly(0);
             else pswdInputDiv.style.borderColor = "#8f8f8f";
         } else if (this.registerPswd.length >= 6) {
             levelDispaly(score >= 4 && score < 5 ? 2 : score >= 5 && score < 6 ? 3 : score === 6 ? 4 : 1);
-            this.pswdValid = score >= 4;
+            this.valid.pswd = score >= 4;
         } else {
             levelDispaly(0);
-            this.pswdValid = false;
+            this.valid.pswd = false;
         }
-        pswdDiv.style.transition = spaces || this.pswdHadSpaces ? "none" : "";
+        pswdDiv.style.transition = spaces || this.errors.pswdHadSpaces ? "none" : "";
         pswdError.style.maxHeight = spaces ? "100px" : "";
         if (spaces) {
-            this.pswdValid = false;
+            this.valid.pswd = false;
             pswdInputDiv.style.borderColor = levels[0]["color"]
         }
-        pswdDiv.style.maxHeight = (this.pswdValid || this.registerPswd.length === 0) && document.activeElement !== pswdInput || spaces ? "0" : "100px";
+        pswdDiv.style.maxHeight = (this.valid.pswd || this.registerPswd.length === 0) && document.activeElement !== pswdInput || spaces ? "0" : "100px";
         this.checkCredentials();
-        this.pswdHadSpaces = spaces;
+        this.errors.pswdHadSpaces = spaces;
     }
 }

@@ -1,0 +1,55 @@
+.notification {
+    padding: 10px;
+    background-color: rgba(31, 31, 31, 0.8);
+    color: #ffffff8e;
+    width: 400px;
+    margin-top: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    border-left: 2px solid;
+    animation: slide-in 0.3s linear 1;
+    position: relative;
+}
+
+.slideOutAnimation {
+    animation: slide-out 0.3s linear 1;
+}
+
+#crossImg {
+    width: 10px;
+}
+
+#closeButton {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    height: fit-content;
+    margin: -6px -6px 0 4px;
+}
+
+#messageTxt {
+    overflow-wrap: break-word;
+}
+
+@keyframes slide-in {
+    0% {
+        right: -200px;
+        opacity: 0%;
+    }
+    100% {
+        right: 0px;
+        opacity: 100%;
+    }
+}
+
+@keyframes slide-out {
+    0% {
+        right: 0px;
+        opacity: 100%;
+    }
+    100% {
+        right: -200px;
+        opacity: 0%;
+    }
+}

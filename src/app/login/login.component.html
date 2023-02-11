@@ -85,5 +85,10 @@
             </form>
         </div>
     </div>
+    <div id="notificationContainer">
+        <ng-container *ngFor="let notification of notifications">
+            <app-notification [notification]="notification" [notifications]="notifications" (outputEvent)="removeNotification($event)"></app-notification>
+        </ng-container>
+    </div>
     <app-loading></app-loading>
 </html>

@@ -8,13 +8,15 @@ import { LoginComponent } from './login/login.component';
 import { FormsModule } from '@angular/forms';
 import { LoadingComponent } from './loading/loading.component';
 import { NotFoundComponent } from './not-found/not-found.component';
+import { NotificationComponent } from './notification/notification.component';
 
 @NgModule({
     declarations: [
         AppComponent,
         LoginComponent,
         LoadingComponent,
-        NotFoundComponent
+        NotFoundComponent,
+        NotificationComponent
     ],
     imports: [
         BrowserModule,

@@ -31,27 +31,27 @@ app.get('/favicon.ico', (req, res) => res.sendFile(dir + '/favicon.ico'));
 app.post('/handle_data', async (req, res) => {
     if (req.body["type"] == "login") {
         if (!req.body.hasOwnProperty("data") || !["email", "pswd"].every(key => req.body["data"].hasOwnProperty(key))) {
-            res.status(400).send('Bad Request');
+            res.status(200).json({status: 400, message: "Bad Request"});
             return;
         }
         try {
             await mongoClient.connect();
         } catch (error) {
             console.error('Error: MongoDB connection refused');
-            res.status(503).json({ error: 503, message: "Database connection failed"});
+            res.status(200).json({status: 503, accepted: false, message: "Internal Service Unavailable"});
             return;
         }
         const user = await mongoClient.db("Website").collection('Users').findOne({email: req.body["data"]["email"]});
         await mongoClient.close();
         if (user === null) {
-            res.status(200).json({ accepted: false, message: "Invalid credentials" });
+            res.status(200).json({status: 401, accepted: false, message: "Invalid Credentials" });
         } else if (user["email"] === req.body["data"]["email"] && user["pswd"] === req.body["data"]["pswd"]) {
-            res.status(200).json({ accepted: true });
+            res.status(200).json({status: 200, accepted: true});
         } else {
-            res.status(200).json({ accepted: false, message: "Invalid credentials" });
+            res.status(200).json({status: 401, accepted: false, message: "Invalid Credentials"});
         }
     } else {
-        await res.status(405).send('Data Handling Method Not Allowed');
+        await res.status(200).json({status: 405, accepted: false, message: "Data Handling Method Not Allowed"});
     }
 })
 
