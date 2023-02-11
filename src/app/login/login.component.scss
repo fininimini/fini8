@@ -27,6 +27,10 @@ input {
     margin-bottom: -5px;
 }
 
+#emailInputRegistration {
+    width: 330px;
+}
+
 .passwordInputDiv {
     border-bottom: solid #8f8f8f 1px;
     margin-bottom: 16px;
@@ -80,11 +84,10 @@ input {
     #container {
         flex-direction: row;
     }
-}
-
-@media only screen and (orientation: portrait) {
-    #container {
-        flex-direction: column;
+    #notificationContainer {
+        position: fixed;
+        right: 10px;
+        bottom: 10px;
     }
 }
 
@@ -146,7 +149,7 @@ input {
     color: #ff4b4b;
     max-height: 0;
     bottom: 15px;
-    width: 330px;
+    width: 334px;
     margin-block: -5px;
 }
 
@@ -157,4 +160,11 @@ input {
     margin: 15px;
     height: fit-content;
     backdrop-filter: blur(1px);
+}
+
+#notificationContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    height: fit-content;
 }
