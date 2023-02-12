@@ -95,27 +95,28 @@ export class LoginComponent {
         const loadingComponent = new LoadingComponent();
         const httpOptions = {headers: new HttpHeaders({"Content-Type": "application/json"})};
         const actions: {[type: string]: string} = {login: "Logging In...", register: "Registering..."}
-
+        const unavailable = "Sorry, an internal service is currently unavailable. Our team is working on a resolution, and it should be back up soon. Please try again later."
+        const unknownError = "An unknown error occurred! Please try again later."
         if (type === "login") {
             const body = {type: "login", data: {email: this.loginEmail, pswd: this.loginPswd}};
-            this.http.post<{status: number, accepted: boolean, message?: string}>("http://127.0.0.1:8080/handle_data", body, httpOptions).subscribe((response) => {
+            this.http.post<{status: number, accepted: boolean, message?: string}>("/handle_data", body, httpOptions).subscribe((response) => {
                 loadingComponent.loadingStop();
                 const message = response.status === 503 ?
-                    "Sorry, an internal service is currently down. Our team is working on a resolution, and it should be back up soon. Please try again later." :
+                    unavailable :
                     response.status === 401 ? "Invalid credentials! Please try again." :
                     response.status === 200 && response.accepted ? "Successfully logged in!" :
-                    "An unknown error occurred! Please try again later."
+                    unknownError
                 this.addNotification(message, response.accepted ? "success" : "error");
             })
         } else if (type === "register") {
             const body = {type: "register", data: {email: this.registerEmail, pswd: this.registerPswd}};
-            this.http.post<{status: number, accepted: boolean, message?: string}>("http://127.0.0.1:8080/handle_data", body, httpOptions).subscribe((response) => {
+            this.http.post<{status: number, accepted: boolean, message?: string}>("/handle_data", body, httpOptions).subscribe((response) => {
                 loadingComponent.loadingStop();
                 const message = response.status === 503 ?
-                    "Sorry, an internal service is currently down. Our team is working on a resolution, and it should be back up soon. Please try again later." :
+                    unavailable :
                     response.status === 409 ? "A user with the specified email already exists. Please use a different email address." :
                     response.status === 201 && response.accepted ? "Successfully registered! You can log in now." :
-                    "An unknown error occurred! Please try again later."
+                    unknownError
                 this.addNotification(message, response.accepted ? "success" : "error");
             })
         }
