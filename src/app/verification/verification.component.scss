@@ -1,0 +1,49 @@
+h1 {
+    color: #ffffff;
+    font-weight: 700;
+    margin: 0;
+    width: 330px;
+    text-align: center;
+}
+
+p {
+    color: #8f8f8f;
+    margin: 0;
+    text-align: center;
+}
+
+.main {
+    background-color: rgba(31, 31, 31, 0.8);
+    border-radius: 15px;
+    padding: 25px 30px 25px 30px;
+    backdrop-filter: blur(1px);
+}
+
+#resend {
+    color: #606060;
+    margin-right: 0.2em;
+}
+
+#resendLink {
+    transition: all 0.2s;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+#resendLink:hover {
+    color: #ffffff;
+}
+
+#resendOuter {
+    display: flex;
+    justify-content: center;
+    width: 300px;
+    margin-inline: 15px;
+}
+
+#resendLinkOuter {
+    color: #2ca87f;
+    width: 56px;
+    display: flex;
+    justify-content: center;
+}

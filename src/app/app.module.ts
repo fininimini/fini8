@@ -9,6 +9,7 @@ import { FormsModule } from '@angular/forms';
 import { LoadingComponent } from './loading/loading.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { NotificationComponent } from './notification/notification.component';
+import { VerificationComponent } from './verification/verification.component';
 
 @NgModule({
     declarations: [
@@ -16,7 +17,8 @@ import { NotificationComponent } from './notification/notification.component';
         LoginComponent,
         LoadingComponent,
         NotFoundComponent,
-        NotificationComponent
+        NotificationComponent,
+        VerificationComponent
     ],
     imports: [
         BrowserModule,
@@ -24,7 +26,9 @@ import { NotificationComponent } from './notification/notification.component';
         HttpClientModule,
         FormsModule
     ],
-    providers: [],
+    providers: [
+        { provide: 'userData', useValue: {validUser: false} }
+    ],
     bootstrap: [AppComponent]
 })
 export class AppModule {}
