@@ -94,7 +94,8 @@ app.post('/handle_data', async (req, res) => {
                         hash: derivedKey.toString('hex'),
                         salt: salt
                     },
-                    emailVerified: false
+                    emailVerified: false,
+                    activeVerification: null
                 }
                 await mongoClient.db("Website").collection('Users').insertOne(userData);
                 await mongoClient.close();
@@ -114,33 +115,81 @@ app.post('/email', async (req, res) => {
         res.status(200).json({status: 400, accepted: false, message: "Bad Request"});
         return;
     }
-    try {
-        await mongoClient.connect();
-    } catch (error) {
-        console.error('Error: MongoDB connection refused');
-        res.status(200).json({status: 503, accepted: false, message: "Internal Service Unavailable"});
-        return;
-    }
-    const user = await mongoClient.db("Website").collection('Users').findOne({email: req.body["email"]});
-    await mongoClient.close();
-    if (user === null) {
-        res.status(200).json({status: 401, accepted: false, message: "Invalid Credentials"});
-        return;
-    }
-    if (user["emailVerified"] === true) {
-        res.status(200).json({status: 409, accepted: false, message: "Email Already Verified"});
-        return;
-    }
     if (req.body["type"] === "verification") {
-        const code = Math.floor(100000 + Math.random() * 900000)
-        const verifyLink = process.env.HTTP_MODE + "://" + WEBSITE + "/verify?token=" + randomBytes(8).toString('hex');
-        emailService.sendMail({from: "fini8", to: req.body["email"], subject: "Confirm your account for fini8", html: emailTemplate(WEBSITE, verifyLink, verifyLink, String(code).split("").map(Number), process.env.SUPPORT_EMAIL)
-        }, (err, data) => {
-            if(err) {
-                console.log('Email Error: ' + err);
-                res.status(200).json({status: 500, accepted: false, message: "Internal Server Error"});
-            } else res.status(200).json({status: 200, accepted: true, message: "Email Verification Sent"});
-        });
+        try {
+            await mongoClient.connect();
+        } catch (error) {
+            console.error('Error: MongoDB connection refused');
+            res.status(200).json({status: 503, accepted: false, message: "Internal Service Unavailable"});
+            return;
+        }
+        const user = await mongoClient.db("Website").collection('Users').findOne({email: req.body["email"]});
+        await mongoClient.close();
+        if (user === null) {
+            res.status(200).json({status: 401, accepted: false, message: "Invalid Credentials"});
+            return;
+        }
+        if (user["emailVerified"] === true) {
+            res.status(200).json({status: 409, accepted: false, message: "Email Already Verified"});
+            return;
+        }
+        if (user["activeVerification"] !== null) {
+            const verifyLink = process.env.HTTP_MODE + "://" + WEBSITE + "/verify?token=" + user["activeVerification"]["id"];
+            emailService.sendMail({
+                from: "fini8",
+                to: user["email"],
+                subject: "Confirm your account for fini8",
+                html: emailTemplate(WEBSITE, verifyLink, verifyLink, user["activeVerification"]["code"], process.env.SUPPORT_EMAIL)
+            }, (err, data) => {
+                if(err) {
+                    console.log('Email Error: ' + err);
+                    res.status(200).json({status: 500, accepted: false, message: "Internal Server Error"});
+                } else res.status(200).json({status: 200, accepted: true, message: "Email Verification Sent"});
+            });
+        } else {
+            try {
+                await mongoClient.connect();
+            } catch (error) {
+                console.error('Error: MongoDB connection refused');
+                res.status(200).json({status: 503, accepted: false, message: "Internal Service Unavailable"});
+                return;
+            }
+            let id, code
+            let dataExists = true
+            while(dataExists) {
+                id = randomBytes(8).toString('hex')
+                code = String(Math.floor(100000 + Math.random() * 900000))
+                dataExists = (await mongoClient.db("Website").collection('Users').findOne({
+                    $or: [
+                        {"activeVerification.id": id},
+                        {"activeVerification.code": code}
+                    ]
+                })) !== null
+            }
+            await mongoClient.db("Website").collection('Users').updateOne(
+                {email: user["email"]},
+                {$set: {activeVerification: {id: id, code: code}}},
+                (err, doc) => {
+                    if (err) {
+                        console.error('Error: MongoDB document update refused');
+                        res.status(200).json({status: 503, accepted: false, message: "Internal Service Unavailable"});
+                        return;
+                    }
+                    const verifyLink = process.env.HTTP_MODE + "://" + WEBSITE + "/verify?token=" + id;
+                    emailService.sendMail({
+                        from: "fini8",
+                        to: user["email"],
+                        subject: "Confirm your account for fini8",
+                        html: emailTemplate(WEBSITE, verifyLink, verifyLink, code.split("").map(Number), process.env.SUPPORT_EMAIL)
+                    }, (err, data) => {
+                        if(err) {
+                            console.log('Email Error: ' + err);
+                            res.status(200).json({status: 500, accepted: false, message: "Internal Server Error"});
+                        } else res.status(200).json({status: 200, accepted: true, message: "Email Verification Sent"});
+                    });
+                }
+            );
+        }
     } else {
         res.status(200).json({status: 405, accepted: false, message: "Type Not Allowed"});
     }

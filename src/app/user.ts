@@ -1,8 +1,9 @@
 export interface User {
-    "email": string,
-    "pswd": {
-        "hash": string,
-        "salt": string
+    email: string,
+    pswd: {
+        hash: string,
+        salt: string
     },
-    "emailVerified": boolean
+    emailVerified: boolean,
+    activeVerification: {id: string, code: string} | null
 }
