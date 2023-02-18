@@ -47,3 +47,32 @@ p {
     display: flex;
     justify-content: center;
 }
+
+#loadingMini {
+    border-radius: 50%;
+    animation: rotate 1s linear infinite;
+    height: 18px;
+    width: 18px;
+}
+
+#loadingMini::before {
+    content: "";
+    box-sizing: border-box;
+    inset: 3px;
+    border-radius: 50%;
+    border: 2px solid #2ca87f;
+    animation: prixClipFix 2s linear infinite;
+    position: absolute;
+}
+
+@keyframes rotate {
+    100% {transform: rotate(360deg)};
+}
+
+@keyframes prixClipFix {
+    0% {clip-path: polygon(50% 50%, 0 0, 0 0, 0 0, 0 0, 0 0)};
+    25% {clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 0, 100% 0, 100% 0)};
+    50% {clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 100% 100%, 100% 100%)};
+    75% {clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 100%)};
+    100% {clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 0)};
+}

@@ -8,8 +8,7 @@ interface User {
         hash: string,
         salt: string
     },
-    emailVerified: boolean,
-    validUser: boolean
+    emailVerified: boolean
 }
 
 interface HandleDataResponse {

@@ -5,6 +5,7 @@ import { LoadingComponent } from "../loading/loading.component";
 import { VerificationComponent } from "../verification/verification.component";
 import { v4 as uuidv4 } from 'uuid';
 import { HandleDataResponse } from "../handle-data-response";
+import { UserDataService } from "../user-data.service";
 
 @Component({
     selector: "app-login",
@@ -21,8 +22,11 @@ export class LoginComponent {
     pswdRevealed: {[name: string]: boolean} = {"Registration": false, "Login": false};
     notifications: Array<{message: string, id: string, type: string}> = [];
     errors = {emailMessageToggled: false, pswdHadSpaces: false};
+    userDataService: UserDataService;
 
-    constructor(private http: HttpClient) {}
+    constructor(private http: HttpClient, userDataService: UserDataService) {
+        this.userDataService = userDataService;
+    }
     removeNotification(id: string): void {
         const notification = document.getElementById(id) as HTMLDivElement;
         notification.classList.add("slideOutAnimation");
@@ -106,8 +110,6 @@ export class LoginComponent {
             {type: type, data: {email: email, pswd: pswd}},
             {headers: new HttpHeaders({"Content-Type": "application/json"})}
         ).subscribe((response) => {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            if (response.accepted && response.userData!.validUser === false) return
             const message = response.status === 503 ?
                 unavailable :
                 type === "login" ?
@@ -116,15 +118,15 @@ export class LoginComponent {
                     unknownError :
                 type === "register" ?
                     response.status === 409 ? "A user with the specified email already exists. Please use a different email address." :
-                    response.status === 201 && response.accepted ? "Successfully registered! You can log in now." :
+                    response.status === 201 && response.accepted ? "Successfully registered! Please verify your email address." :
                     unknownError :
                 unknownError
-            const userData = response.accepted ? response.userData : undefined;
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            this.userDataService.set(response.userData!);
             loadingComponent.loadingStop();
             this.addNotification(message, response.accepted ? "success" : "error");
-            if (response.accepted && ((type === "login" && userData?.emailVerified === false) || type === "register")) {
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                const verificationComponent = new VerificationComponent(this.http, userData!);
+            if (response.accepted && ((type === "login" && this.userDataService.get().emailVerified === false) || type === "register")) {
+                const verificationComponent = new VerificationComponent(this.http, this.userDataService);
                 verificationComponent.verificationActivate();
             }
         });

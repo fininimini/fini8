@@ -26,9 +26,7 @@ import { VerificationComponent } from './verification/verification.component';
         HttpClientModule,
         FormsModule
     ],
-    providers: [
-        { provide: 'userData', useValue: {validUser: false} }
-    ],
+    providers: [],
     bootstrap: [AppComponent]
 })
 export class AppModule {}

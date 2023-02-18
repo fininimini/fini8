@@ -1,7 +1,7 @@
-import { Component, Output, EventEmitter, Inject } from '@angular/core';
+import { Component, Output, EventEmitter } from '@angular/core';
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { HandleDataResponse } from "../handle-data-response";
-import { User } from "../user";
+import { UserDataService } from "../user-data.service";
 
 @Component({
     selector: 'app-verification',
@@ -11,46 +11,51 @@ import { User } from "../user";
 export class VerificationComponent {
     resendTimeS = 120;
     resendErrTimeS = 10;
+    userDataService: UserDataService;
 
-    userData: User;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     @Output() outputEvent = new EventEmitter<any>();
-    constructor(private http: HttpClient, @Inject('userData') userData: User) {
-        this.userData = userData;
+    constructor(private http: HttpClient, userDataService: UserDataService) {
+        this.userDataService = userDataService;
     }
-    sendVerificationEmail(type = "verification"): void {
+    sendVerificationEmail = (type = "verification") => {
+        const resendLink = document.getElementById("resendLink") as HTMLAnchorElement;
+        const resendClock = document.getElementById("resendClock") as HTMLSpanElement;
+        const resendLoading = document.getElementById("loadingMini") as HTMLDivElement;
+        resendLink.style.display = "none";
+        resendLoading.style.display = "";
+        resendClock.style.color = "#606060";
         this.http.post<HandleDataResponse>(
-            "/email",
-            {type: "verification", email: this.userData.email},
+            "http://127.0.0.1:8080/email",
+            {type: "verification", email: this.userDataService.get().email},
             {headers: new HttpHeaders({"Content-Type": "application/json"})}
         ).subscribe((response) => {
+            if (response.status === 409) {
+                const container = document.getElementById("container") as HTMLDivElement;
+                const verification = document.getElementById("emailVerification") as HTMLDivElement;
+
+                verification.style.display = "none";
+                container.style.display = "";
+                return;
+            }
             let time = type === "verification" ? this.resendErrTimeS : response.accepted ? this.resendTimeS : this.resendErrTimeS;
-            const resendClock = document.getElementById("resendClock") as HTMLSpanElement;
             const minutes = Math.floor(time / 60)
             const seconds = time - minutes * 60
-            resendClock.textContent = `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`
-            resendClock.style.color = "#606060";
-
-            if (response.accepted) {
-                const resendLink = document.getElementById("resendLink") as HTMLAnchorElement;
-                resendLink.style.display = "none";
-                resendClock.style.display = "";
-                this.outputEvent.emit({message: "Successfully sent verification email", status: "success"});
-            }
-            else {
-                this.outputEvent.emit({message: "An unknown error occurred! Please try again later.", status: "error"});
-            }
+            resendClock.textContent = `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`;
+            resendLoading.style.display = "none";
+            resendLink.style.display = "none";
+            resendClock.style.display = "";
+            if (response.accepted) this.outputEvent.emit({message: "Successfully sent verification email", status: "success"});
+            else if (response.status === 503) this.outputEvent.emit({message: "Sorry, an internal service is currently unavailable. Our team is working on a resolution, and it should be back up soon. Please try again later.", status: "error"});
+            else this.outputEvent.emit({message: "An unknown error occurred! Please try again later.", status: "error"});
             const timer = setInterval(() => {
-                resendClock.style.color = "#606060";
                 const minutes = Math.floor(time / 60)
                 const seconds = time - minutes * 60
                 resendClock.textContent = `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`;
                 if (time === 0) {
-                    const resendLink = document.getElementById("resendLink") as HTMLAnchorElement;
                     resendClock.style.display = "none";
                     resendLink.style.display = "";
                     clearInterval(timer);
-                    resendClock.style.color = "#2ca87f";
                 }
                 time--;
             }, 1000);
