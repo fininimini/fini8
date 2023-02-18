@@ -149,6 +149,6 @@ app.post('/email', async (req, res) => {
 app.use('/staticAssets', express.static(dir));
 app.use('/assets', express.static(dir + "/assets"));
 
-app.use((req, res) => res.status(404).redirect("404"));
+app.use((req, res) => res.status(404).redirect("/404"));
 
 app.listen(port, () => console.log('Server running on port ' + port))
