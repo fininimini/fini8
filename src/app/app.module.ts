@@ -10,6 +10,7 @@ import { LoadingComponent } from './loading/loading.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { NotificationComponent } from './notification/notification.component';
 import { VerificationComponent } from './verification/verification.component';
+import { VerifyComponent } from './verify/verify.component';
 
 @NgModule({
     declarations: [
@@ -18,7 +19,8 @@ import { VerificationComponent } from './verification/verification.component';
         LoadingComponent,
         NotFoundComponent,
         NotificationComponent,
-        VerificationComponent
+        VerificationComponent,
+        VerifyComponent
     ],
     imports: [
         BrowserModule,

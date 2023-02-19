@@ -26,7 +26,7 @@ export class VerificationComponent {
         resendLoading.style.display = "";
         resendClock.style.color = "#606060";
         this.http.post<HandleDataResponse>(
-            "http://127.0.0.1:8080/email",
+            "/email",
             {type: "verification", email: this.userDataService.get().email},
             {headers: new HttpHeaders({"Content-Type": "application/json"})}
         ).subscribe((response) => {
