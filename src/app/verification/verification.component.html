@@ -1,12 +1,9 @@
 <div id="emailVerification" class="main" style="display: none;">
     <h1>Verify email address</h1>
-    <p>Check your email for the verification.</p>
-    <div id="resendOuter">
-        <p id="resend">Didn't receive it?</p>
-        <div id="resendLinkOuter">
-            <a (click)="sendVerificationEmail('resend')" id="resendLink">Resend</a>
-            <span style="display: none;" id="resendClock"></span>
-            <div id="loadingMini"></div>
-        </div>
+    <p id="emailText">We sent the verification email to </p>
+    <div id="resendLinkOuter">
+        <a (click)="sendVerificationEmail('resend')" id="resendLink">Didn't receive the email?</a>
+        <span style="display: none;" id="resendClock"></span>
+        <div id="loadingMini"></div>
     </div>
 </div>

@@ -31,42 +31,45 @@ export class VerificationComponent {
             {headers: new HttpHeaders({"Content-Type": "application/json"})}
         ).subscribe((response) => {
             if (response.status === 409) {
-                const container = document.getElementById("container") as HTMLDivElement;
-                const verification = document.getElementById("emailVerification") as HTMLDivElement;
-
-                verification.style.display = "none";
-                container.style.display = "";
+                (document.getElementById("emailVerification") as HTMLDivElement).style.display = "none";
+                (document.getElementById("container") as HTMLDivElement).style.display = "";
                 return;
             }
-            let time = type === "verification" ? this.resendErrTimeS : response.accepted ? this.resendTimeS : this.resendErrTimeS;
-            const minutes = Math.floor(time / 60)
-            const seconds = time - minutes * 60
-            resendClock.textContent = `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`;
-            resendLoading.style.display = "none";
-            resendLink.style.display = "none";
-            resendClock.style.display = "";
-            if (response.accepted) this.outputEvent.emit({message: "Successfully sent verification email", status: "success"});
-            else if (response.status === 503) this.outputEvent.emit({message: "Sorry, an internal service is currently unavailable. Our team is working on a resolution, and it should be back up soon. Please try again later.", status: "error"});
-            else this.outputEvent.emit({message: "An unknown error occurred! Please try again later.", status: "error"});
-            const timer = setInterval(() => {
+            let time = type === "verification" ? 0 : response.accepted ? this.resendTimeS : this.resendErrTimeS;
+            if (type !== "verification") {
                 const minutes = Math.floor(time / 60)
                 const seconds = time - minutes * 60
                 resendClock.textContent = `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`;
-                if (time === 0) {
-                    resendClock.style.display = "none";
-                    resendLink.style.display = "";
-                    clearInterval(timer);
-                }
-                time--;
-            }, 1000);
+                resendLoading.style.display = "none";
+                resendLink.style.display = "none";
+                resendClock.style.display = "";
+                if (response.accepted) this.outputEvent.emit({message: "Successfully sent verification email", status: "success"});
+                else if (response.status === 503) this.outputEvent.emit({message: "Sorry, an internal service is currently unavailable. Our team is working on a resolution, and it should be back up soon. Please try again later.", status: "error"});
+                else this.outputEvent.emit({message: "An unknown error occurred! Please try again later.", status: "error"});
+                const timer = setInterval(() => {
+                    const minutes = Math.floor(time / 60)
+                    const seconds = time - minutes * 60
+                    resendClock.textContent = `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`;
+                    if (time === 0) {
+                        resendClock.style.display = "none";
+                        resendLink.style.display = "";
+                        clearInterval(timer);
+                    }
+                    time--;
+                }, 1000);
+            } else {
+                resendClock.style.display = "none";
+                resendLink.style.display = "";
+                resendLoading.style.display = "none";
+            }
         });
     }
     verificationActivate(): void {
-        const container = document.getElementById("container") as HTMLDivElement;
-        const verification = document.getElementById("emailVerification") as HTMLDivElement;
-
-        verification.style.display = "";
-        container.style.display = "none";
+        const email = this.userDataService.get().email;
+        (document.getElementById("emailText") as HTMLDivElement).innerText = "We sent the verification email to: " +
+            "*".repeat(email.indexOf("@")) + email.substring(email.indexOf("@"));
+        (document.getElementById("emailVerification") as HTMLDivElement).style.display = "";
+        (document.getElementById("container") as HTMLDivElement).style.display = "none";
         this.sendVerificationEmail();
     }
 }
