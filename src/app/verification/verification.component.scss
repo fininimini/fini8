@@ -2,7 +2,7 @@ h1 {
     color: #ffffff;
     font-weight: 700;
     margin: 0;
-    width: 330px;
+    font-size: 35px;
     text-align: center;
 }
 
@@ -10,7 +10,7 @@ h1 {
     color: #8f8f8f;
     text-align: center;
     margin: auto;
-    max-width: 300px;
+    max-width: 320px;
 }
 
 .main {
@@ -20,9 +20,8 @@ h1 {
     backdrop-filter: blur(1px);
 }
 
-#resend {
+#resendClock {
     color: #606060;
-    margin-right: 0.2em;
 }
 
 #resendLink {
@@ -36,11 +35,10 @@ h1 {
 }
 
 #resendLinkOuter {
-    width: 300px;
-    margin-inline: 15px;
+    width: fit-content;
     color: #2ca87f;
     display: flex;
-    justify-content: left;
+    margin: auto;
 }
 
 #loadingMini {
@@ -70,4 +68,25 @@ h1 {
     50% {clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 100% 100%, 100% 100%)};
     75% {clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 100%)};
     100% {clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 0)};
+}
+
+.codeInput {
+    width: 37px;
+    height: 45px;
+    border: 2px solid #8f8f8f;
+    border-radius: 10px;
+    background-color: transparent;
+    color: #ffffff8e;
+    font-size: 37px;
+    text-align: center;
+}
+
+#emailInputContainer {
+    display: flex;
+    flex-direction: row;
+    margin: auto;
+    margin-top: 20px;
+    margin-bottom: 5px;
+    justify-content: space-between;
+    width: 310px;
 }

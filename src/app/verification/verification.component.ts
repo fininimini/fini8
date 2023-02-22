@@ -12,13 +12,14 @@ export class VerificationComponent {
     resendTimeS = 120;
     resendErrTimeS = 10;
     userDataService: UserDataService;
+    code = ["", "", "", "", "", ""];
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     @Output() outputEvent = new EventEmitter<any>();
     constructor(private http: HttpClient, userDataService: UserDataService) {
         this.userDataService = userDataService;
     }
-    sendVerificationEmail = (type = "verification") => {
+    sendVerificationEmail = (type = "sendVerification") => {
         const resendLink = document.getElementById("resendLink") as HTMLAnchorElement;
         const resendClock = document.getElementById("resendClock") as HTMLSpanElement;
         const resendLoading = document.getElementById("loadingMini") as HTMLDivElement;
@@ -27,7 +28,7 @@ export class VerificationComponent {
         resendClock.style.color = "#606060";
         this.http.post<HandleDataResponse>(
             "/email",
-            {type: "verification", userData: {email: this.userDataService.get().email, pswdHash: this.userDataService.get().pswd.hash}},
+            {type: "sendVerification", userData: {email: this.userDataService.get().email, pswdHash: this.userDataService.get().pswd.hash}},
             {headers: new HttpHeaders({"Content-Type": "application/json"})}
         ).subscribe((response) => {
             if (response.status === 409) {
@@ -35,8 +36,8 @@ export class VerificationComponent {
                 (document.getElementById("container") as HTMLDivElement).style.display = "";
                 return;
             }
-            let time = type === "verification" ? 0 : response.accepted ? this.resendTimeS : this.resendErrTimeS;
-            if (type !== "verification") {
+            let time = type === "sendVerification" ? 0 : response.accepted ? this.resendTimeS : this.resendErrTimeS;
+            if (type !== "sendVerification") {
                 const minutes = Math.floor(time / 60)
                 const seconds = time - minutes * 60
                 resendClock.textContent = `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`;
@@ -66,10 +67,18 @@ export class VerificationComponent {
     }
     verificationActivate(): void {
         const email = this.userDataService.get().email;
+        const len = email.indexOf("@");
+        const txtLen = Math.floor(len*.3);
         (document.getElementById("emailText") as HTMLDivElement).innerText = "We sent the verification email to: " +
-            "*".repeat(email.indexOf("@")) + email.substring(email.indexOf("@"));
+            "*".repeat(len-(txtLen>=4?4:txtLen)) + email.substring(len-(txtLen>=4?4:txtLen));
         (document.getElementById("emailVerification") as HTMLDivElement).style.display = "";
         (document.getElementById("container") as HTMLDivElement).style.display = "none";
         this.sendVerificationEmail();
+    }
+    checkCode() {
+        this.code.forEach((value, index) => {
+            // if (isNaN(parseInt(value))) then set the corsponding input to ""
+            if (value !== "") (document.getElementById(`codeInput${index===5?5:(index+1)}`) as HTMLInputElement).focus();
+        });
     }
 }

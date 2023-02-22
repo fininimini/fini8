@@ -22,7 +22,7 @@ if (process.env.DEBUG === "true") {
     const dateTime = new Date();
     const time = ("0" + dateTime.getDate()).slice(-2) + "/" + ("0" + (dateTime.getMonth() + 1)).slice(-2) + "/" + dateTime.getFullYear() +
     "-" + dateTime.getHours() + ":" + dateTime.getMinutes() + ":" + dateTime.getSeconds();
-    logiFles.forEach(file => appendFile(file, `\n\n\nServer Started Successfully [${time}]\n\n\n`, (err) => {if (err) console.error("file write start err: " + err)}));
+    logiFles.forEach(file => appendFile(file, `\n\n\nServer Started Successfully [ ${time} ]\n\n\n`, (err) => {if (err) console.error("file write start err: " + err)}));
 };
 
 const app = express();
@@ -71,8 +71,11 @@ app.post('/handle_data', async (req, res) => {
         try {
             await mongoClient.connect();
         } catch (error) {
-            if (process.env.DEBUG === "true") appendFile("./error.log", 'Error: MongoDB connection refused: ' + error, (err) => {if (err) console.error(err)});
-            console.error('Error: MongoDB connection refused');
+            const dateTime = new Date();
+            const time = ("0" + dateTime.getDate()).slice(-2) + "/" + ("0" + (dateTime.getMonth() + 1)).slice(-2) + "/" + dateTime.getFullYear() +
+            "-" + dateTime.getHours() + ":" + dateTime.getMinutes() + ":" + dateTime.getSeconds();
+            if (process.env.DEBUG === "true") appendFile("./error.log", `[ ${time} ] Error: MongoDB connection refused: ` + error, (err) => {if (err) console.error(err)});
+            console.error(`[ ${time} ] Error: MongoDB error: ` + error);
             return res.status(200).json({status: 503, accepted: false, message: "Internal Service Unavailable"});
         }
         const user = await mongoClient.db("Website").collection('Users').findOne({email: req.body["data"]["email"]});
@@ -88,8 +91,11 @@ app.post('/handle_data', async (req, res) => {
         try {
             await mongoClient.connect();
         } catch (error) {
-            if (process.env.DEBUG === "true") appendFile("./error.log", 'Error: MongoDB connection refused: ' + error, (err) => {if (err) console.error(err)});
-            console.error('Error: MongoDB connection refused');
+            const dateTime = new Date();
+            const time = ("0" + dateTime.getDate()).slice(-2) + "/" + ("0" + (dateTime.getMonth() + 1)).slice(-2) + "/" + dateTime.getFullYear() +
+            "-" + dateTime.getHours() + ":" + dateTime.getMinutes() + ":" + dateTime.getSeconds();
+            if (process.env.DEBUG === "true") appendFile("./error.log", `[ ${time} ] Error: MongoDB connection refused: ` + error, (err) => {if (err) console.error(err)});
+            console.error(`[ ${time} ] Error: MongoDB error: ` + error);
             return res.status(200).json({status: 503, accepted: false, message: "Internal Service Unavailable"});
         }
         const user = await mongoClient.db("Website").collection('Users').findOne({email: req.body["data"]["email"]});
@@ -118,18 +124,19 @@ app.post('/handle_data', async (req, res) => {
 })
 
 app.post('/email', async (req, res) => {
-    if (req.body["type"] === "verification" && (
-        !req.body.hasOwnProperty("userData") ||
-        !["email", "pswdHash"].every(key => req.body["userData"].hasOwnProperty(key)) ||
-        typeof req.body["userData"]["email"] !== "string" ||
-        typeof req.body["userData"]["pswdHash"] !== "string"
-    )) return res.status(200).json({status: 400, accepted: false, message: "Bad Request"});
-    if (req.body["type"] === "verification") {
+    if ((req.body["type"] === "sendVerification" && (
+        !req.body.hasOwnProperty("userData") || !["email", "pswdHash"].every(key => req.body["userData"].hasOwnProperty(key)) ||
+        typeof req.body["userData"]["email"] !== "string" || typeof req.body["userData"]["pswdHash"] !== "string"))
+    ) return res.status(200).json({status: 400, accepted: false, message: "Bad Request"});
+    if (req.body["type"] === "sendVerification") {
         try {
             await mongoClient.connect();
         } catch (error) {
-            if (process.env.DEBUG === "true") appendFile("./error.log", 'Error: MongoDB connection refused: ' + error, (err) => {if (err) console.error(err)});
-            console.error('Error: MongoDB connection refused');
+            const dateTime = new Date();
+            const time = ("0" + dateTime.getDate()).slice(-2) + "/" + ("0" + (dateTime.getMonth() + 1)).slice(-2) + "/" + dateTime.getFullYear() +
+            "-" + dateTime.getHours() + ":" + dateTime.getMinutes() + ":" + dateTime.getSeconds();
+            if (process.env.DEBUG === "true") appendFile("./error.log", `[ ${time} ] Error: MongoDB connection refused: ` + error, (err) => {if (err) console.error(err)});
+            console.error(`[ ${time} ] Error: MongoDB error: ` + error);
             return res.status(200).json({status: 503, accepted: false, message: "Internal Service Unavailable"});
         }
         const user = await mongoClient.db("Website").collection('Users').findOne({email: req.body["userData"]["email"]});
@@ -154,8 +161,11 @@ app.post('/email', async (req, res) => {
                 html: emailTemplate(WEBSITE, verifyLink, verifyLink, user["activeVerification"]["code"], process.env.SUPPORT_EMAIL)
             }, (err, data) => {
                 if(err) {
-                    if (process.env.DEBUG === "true") appendFile("./error.log", 'Email Error: ' + err, (err) => {if (err) console.error(err)});
-                    console.error('Email Error: ' + err);
+                    const dateTime = new Date();
+                    const time = ("0" + dateTime.getDate()).slice(-2) + "/" + ("0" + (dateTime.getMonth() + 1)).slice(-2) + "/" + dateTime.getFullYear() +
+                    "-" + dateTime.getHours() + ":" + dateTime.getMinutes() + ":" + dateTime.getSeconds();
+                    if (process.env.DEBUG === "true") appendFile("./error.log", `[ ${time} ] Email Error: ` + err, (err) => {if (err) console.error(err)});
+                    console.error(`[ ${time} ] Email Error: ` + err);
                     return res.status(200).json({status: 500, accepted: false, message: "Internal Server Error"});
                 } else return res.status(200).json({status: 200, accepted: true, message: "Email Verification Sent"});
             });
@@ -186,18 +196,52 @@ app.post('/email', async (req, res) => {
                     html: emailTemplate(WEBSITE, verifyLink, verifyLink, code.split("").map(Number), process.env.SUPPORT_EMAIL)
                 }, (err, data) => {
                     if (err) {
-                        if (process.env.DEBUG === "true") appendFile("./error.log", 'Email Error: ' + err, (err) => {if (err) console.error(err)});
-                        console.error('Email Error: ' + err);
+                        const dateTime = new Date();
+                        const time = ("0" + dateTime.getDate()).slice(-2) + "/" + ("0" + (dateTime.getMonth() + 1)).slice(-2) + "/" + dateTime.getFullYear() +
+                        "-" + dateTime.getHours() + ":" + dateTime.getMinutes() + ":" + dateTime.getSeconds();
+                        if (process.env.DEBUG === "true") appendFile("./error.log", `[ ${time} ] Email Error: ` + err, (err) => {if (err) console.error(err)});
+                        console.error(`[ ${time} ] Email Error: ` + err);
                         return res.status(200).json({status: 500, accepted: false, message: "Internal Server Error"});
                     } else return res.status(200).json({status: 200, accepted: true, message: "Email Verification Sent"});
                 });
             }
             catch (error) {
-                if (process.env.DEBUG === "true") appendFile("./error.log", 'Error: MongoDB document update refused: ' + error, (err) => {if (err) console.error(err)});
-                console.error('Error: MongoDB document update refused');
+                const dateTime = new Date();
+                const time = ("0" + dateTime.getDate()).slice(-2) + "/" + ("0" + (dateTime.getMonth() + 1)).slice(-2) + "/" + dateTime.getFullYear() +
+                "-" + dateTime.getHours() + ":" + dateTime.getMinutes() + ":" + dateTime.getSeconds();
+                if (process.env.DEBUG === "true") appendFile("./error.log", `[ ${time} ] Error: MongoDB document update refused: ` + error, (err) => {if (err) console.error(err)});
+                console.error(`[ ${time} ] Error: MongoDB error: ` + error);
                 return res.status(200).json({status: 500, accepted: false, message: "Internal Service Unavailable"});
             };
         };
+    } else if (req.body["type"] === "finishVerification") {
+        if (req.body.id.length !== 16 || !(/[0-9A-Fa-f]{16}/.test(req.body.id))) return res.status(200).json({status: 400, accepted: false, message: "Id Not Valid"});
+        else {
+            try {
+                await mongoClient.connect();
+            } catch (error) {
+                const dateTime = new Date();
+                const time = ("0" + dateTime.getDate()).slice(-2) + "/" + ("0" + (dateTime.getMonth() + 1)).slice(-2) + "/" + dateTime.getFullYear() +
+                "-" + dateTime.getHours() + ":" + dateTime.getMinutes() + ":" + dateTime.getSeconds();
+                if (process.env.DEBUG === "true") appendFile("./error.log", `[ ${time} ] Error: MongoDB connection refused: ` + error, (err) => {if (err) console.error(err)});
+                console.error(`[ ${time} ] Error: MongoDB error: ` + error);
+                return res.status(200).json({status: 503, accepted: false, message: "Internal Service Unavailable"});
+            }
+            await mongoClient.db("Website").collection('Users').findOne({"activeVerification.id": req.body.id}).then(async (user) => {
+                const resp = await mongoClient.db("Website").collection('Users').updateOne(
+                    {"activeVerification.id": req.body.id},
+                    {$set: {emailVerified: true, activeVerification: null}}
+                )
+                await mongoClient.close();
+                const len = user.email.indexOf("@");
+                const txtLen = Math.floor(len*.3);
+                if (resp.matchedCount > 0 && resp.modifiedCount > 0 && resp.acknowledged) return res.status(200).json({
+                    status: 200, accepted: true,
+                    email: "*".repeat(len-(txtLen>=4?4:txtLen)) + user.email.substring(len-(txtLen>=4?4:txtLen))});
+                else if (resp.matchedCount === 0) return res.status(200).json({status: 400, accepted: false, message: "Id Not Valid"});
+                else return res.status(200).json({status: 500, accepted: false, message: "Internal Error"});
+            });
+        }
     } else return res.status(200).json({status: 405, accepted: false, message: "Type Not Allowed"});
 })
 
@@ -205,5 +249,4 @@ app.use('/staticAssets', express.static(dir));
 app.use('/assets', express.static(dir + "/assets"));
 
 app.use((req, res) => res.status(404).redirect("/404"));
-
 app.listen(port, () => console.log('Server running on port ' + port));

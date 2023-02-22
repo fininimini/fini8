@@ -1,6 +1,14 @@
 <div id="emailVerification" class="main" style="display: none;">
     <h1>Verify email address</h1>
     <p id="emailText">We sent the verification email to </p>
+    <div id="emailInputContainer">
+        <input class="codeInput" [(ngModel)]="code[0]" (ngModelChange)="checkCode()" id="codeInput0" type="text" inputmode="numeric" pattern="[0-9]+">
+        <input class="codeInput" [(ngModel)]="code[1]" (ngModelChange)="checkCode()" id="codeInput1" type="text" inputmode="numeric" pattern="[0-9]+">
+        <input class="codeInput" [(ngModel)]="code[2]" (ngModelChange)="checkCode()" id="codeInput2" type="text" inputmode="numeric" pattern="[0-9]+">
+        <input class="codeInput" [(ngModel)]="code[3]" (ngModelChange)="checkCode()" id="codeInput3" type="text" inputmode="numeric" pattern="[0-9]+">
+        <input class="codeInput" [(ngModel)]="code[4]" (ngModelChange)="checkCode()" id="codeInput4" type="text" inputmode="numeric" pattern="[0-9]+">
+        <input class="codeInput" [(ngModel)]="code[5]" (ngModelChange)="checkCode()" id="codeInput5" type="text" inputmode="numeric" pattern="[0-9]+">
+    </div>
     <div id="resendLinkOuter">
         <a (click)="sendVerificationEmail('resend')" id="resendLink">Didn't receive the email?</a>
         <span style="display: none;" id="resendClock"></span>

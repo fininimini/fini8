@@ -5,4 +5,5 @@ export interface HandleDataResponse {
     accepted: boolean,
     userData?: User,
     message?: string
+    email?: string
 }

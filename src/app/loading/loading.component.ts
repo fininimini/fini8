@@ -7,13 +7,13 @@ import { Component } from '@angular/core';
 })
 
 export class LoadingComponent {
-    loadingActivate(event: Event, action: string): void {
+    loadingActivate(event: Event | null, action: string): void {
         const container = document.getElementById("container") as HTMLDivElement;
         const actionText = document.getElementById("loadingAction") as HTMLHeadingElement;
         const loading = document.getElementById("loading") as HTMLDivElement;
         const loadingParrent = document.getElementById("loading_outer") as HTMLDivElement;
 
-        event.preventDefault();
+        if (event !== null) event.preventDefault();
 
         loading.style.display = "";
         loading.style.width = '140px';

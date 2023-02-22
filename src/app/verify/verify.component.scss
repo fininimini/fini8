@@ -1,0 +1,49 @@
+h1 {
+    color: #ffffff;
+    margin: 0;
+    text-align: center;
+}
+
+.main {
+    background-color: rgba(31, 31, 31, 0.8);
+    border-radius: 15px;
+    padding: 25px 30px 25px 30px;
+    backdrop-filter: blur(1px);
+}
+
+p {
+    color: #8f8f8f;
+    text-align: center;
+    margin: auto;
+    max-width: 350px;
+}
+
+button {
+    margin-top: 25px;
+    border: none;
+    height: 38px;
+    width: 150px;
+    border-radius: 8px;
+    font-size: 17px;
+    transition: all 1s;
+    box-shadow: 2px 2px 8px #38d39f70;
+    color: #ffffffcc;
+    cursor: pointer;
+}
+
+#success button {
+    background: #38d39f;
+    box-shadow: 2px 2px 8px #38d39f70;
+}
+
+#fail button {
+    background: #ff4b4bd8;
+    box-shadow: 2px 2px 8px #ff4b4b70;
+}
+
+#resendLink {
+    transition: all 0.2s;
+    text-decoration: none;
+    color: #2ca87f;
+    cursor: pointer;
+}
