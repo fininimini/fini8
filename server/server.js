@@ -246,6 +246,7 @@ app.use('/staticAssets', express.static(dir));
 app.use('/assets', express.static(dir + "/assets"));
 
 app.use((req, res) => res.status(404).redirect("/404"));
+
 app.listen(port, async () => {
     console.log('Server running on port ' + port);
     try {
