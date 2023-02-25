@@ -123,6 +123,9 @@ input {
     position: relative;
     top: 2px;
     margin-right: -100px;
+    cursor: pointer;
+    padding-inline: 0;
+    margin-inline: 4px;
 }
 
 .buttonImage {
@@ -165,6 +168,6 @@ input {
 #notificationContainer {
     display: flex;
     flex-direction: column;
-    justify-content: end;
+    justify-content: flex-end;
     height: fit-content;
 }

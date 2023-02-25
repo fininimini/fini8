@@ -7,13 +7,9 @@ import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 })
 export class NotificationComponent implements OnInit {
     @Input() notification!: {message: string, id: string, type: string};
-    @Input() notifications!: Array<{message: string}>;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    @Output() outputEvent = new EventEmitter<any>();
-
+    @Output() removeNotification = new EventEmitter<string>();
     message = ""
     id = ""
-
     ngOnInit(): void {
         this.message = this.notification.message
         this.id = this.notification.id
@@ -30,8 +26,5 @@ export class NotificationComponent implements OnInit {
             })();
         }, 50)
     }
-
-    close(): void {
-        this.outputEvent.emit(this.id)
-    }
+    close(): void {this.removeNotification.emit(this.id)}
 }

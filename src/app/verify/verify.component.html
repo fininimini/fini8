@@ -1,0 +1,14 @@
+<div id="container">
+    <div id="success" style="display: none;" class="main">
+        <h1>Successfully verified!</h1>
+        <p id="emailText">Successfully verified email address: You can continue now.</p>
+        <div style="margin: auto; width: fit-content;"><a href="/"><button>Continue</button></a></div>
+    </div>
+    <div id="fail" style="display: none;" class="main">
+        <h1>Fail!</h1>
+        <p id="failText">An unknown error occurred! Please try again later.</p>
+        <div style="margin: auto; width: fit-content;"><a href="/"><button>Continue</button></a></div>
+        <div style="margin: auto; width: fit-content; margin-top: 5px; margin-bottom: -5px;"><a style="display: none;" (click)="cheackVerification('reCheack')" id="resendLink">Retry to verify</a></div>
+    </div>
+</div>
+<app-loading></app-loading>

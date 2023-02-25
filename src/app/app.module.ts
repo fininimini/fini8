@@ -9,6 +9,8 @@ import { FormsModule } from '@angular/forms';
 import { LoadingComponent } from './loading/loading.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { NotificationComponent } from './notification/notification.component';
+import { VerificationComponent } from './verification/verification.component';
+import { VerifyComponent } from './verify/verify.component';
 
 @NgModule({
     declarations: [
@@ -16,7 +18,9 @@ import { NotificationComponent } from './notification/notification.component';
         LoginComponent,
         LoadingComponent,
         NotFoundComponent,
-        NotificationComponent
+        NotificationComponent,
+        VerificationComponent,
+        VerifyComponent
     ],
     imports: [
         BrowserModule,

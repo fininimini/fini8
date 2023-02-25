@@ -1,96 +1,258 @@
 /* eslint-env es6 */
+const { stat, writeFile, appendFile, readFile } = require('fs')
 const express = require('express');
 const bodyParser = require('body-parser');
 const { MongoClient } = require('mongodb');
 const { pbkdf2, timingSafeEqual, randomBytes } = require('crypto');
+const dotEnv = require('dotenv').config({path: './.env'});
+const nodeMailer = require('nodemailer');
 
 const port = process.env.PORT || 8080;
 const dir = __dirname + "/fini8";
-const mongoURI = '***REMOVED***';
+const indexRoutes = ['/', '/login', '/404'];
+const credentailsMinLength = {email: 6, pswd: 6};
+const WEBSITE = "fini8.eu";
+const logiFles = ["./request.log", "./error.log"];
 
+class Loging {
+    error (err, msg = "MongoDB connection refused", type = "MongoDB") {
+        const dateTime = new Date();
+        const time = ("0" + dateTime.getDate()).slice(-2) + "/" + ("0" + (dateTime.getMonth() + 1)).slice(-2) + "/" + dateTime.getFullYear() +
+        "-" + dateTime.getHours() + ":" + dateTime.getMinutes() + ":" + dateTime.getSeconds();
+        if (process.env.DEBUG === "true") appendFile("./error.log", `[ ${time} ] ${type} Error: ${msg}: ` + err, (err) => {if (err) console.error(err)});
+        console.error(`[ ${time} ] Error: ${type} error: ` + err);
+    }
+}
+
+const parseVerifyEmailTemplate = (code, verifyLink, callback) => {
+    readFile("serverAssets/verifyEmail.html", "utf8", (err, data) => {
+        if (err) return logging.error(err, "Error reading verifyEmail.html", "File");
+        let template = data;
+        for (const [key, value] of Object.entries({
+            "code0": code[0],
+            "code1": code[1],
+            "code2": code[2],
+            "code3": code[3],
+            "code4": code[4],
+            "code5": code[5],
+            "buttonLink": verifyLink,
+            "altLink": verifyLink,
+            "website": WEBSITE,
+            "supportEmail": process.env.SUPPORT_EMAIL
+        })) {template = template.replace((new RegExp(`{{${key}}}`, 'g')), value)}
+        callback(template);
+    });
+}
+
+if (process.env.DEBUG === "true") {
+    logiFles.forEach(file =>
+        stat(file, (err, stats) => {if (stats === undefined) writeFile(file, "", (err) => {if (err) console.error("file create err: " + err)})})
+    );
+    const dateTime = new Date();
+    const time = ("0" + dateTime.getDate()).slice(-2) + "/" + ("0" + (dateTime.getMonth() + 1)).slice(-2) + "/" + dateTime.getFullYear() +
+    "-" + dateTime.getHours() + ":" + dateTime.getMinutes() + ":" + dateTime.getSeconds();
+    logiFles.forEach(file => appendFile(file, `\n\n\nServer Started Successfully [ ${time} ]\n\n\n`, (err) => {if (err) console.error("file write start err: " + err)}));
+};
+
+const logging = new Loging;
 const app = express();
-const mongoClient = new MongoClient(mongoURI);
+let mongoClient;
+const emailService = nodeMailer.createTransport({service: 'gmail', auth: {user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS}});
 
 app.use(bodyParser.json());
 app.use((req, res, next) => {
+    if (process.env.DEBUG === "true") {
+        const dateTime = new Date();
+        let ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        ip = ip.substr(0, 7) == "::ffff:" ? ip.substr(7) : ip;
+        msg = "[ " + ("0" + dateTime.getDate()).slice(-2) + "/" + ("0" + (dateTime.getMonth() + 1)).slice(-2) + "/" + dateTime.getFullYear() +
+            "-" + dateTime.getHours() + ":" + dateTime.getMinutes() + ":" + dateTime.getSeconds() + " ]( " + ip + " ) " + req.protocol + " " + req.method + " " + req.url
+            + (JSON.stringify(req.body) === "{}" ? "" : (" {body: " + JSON.stringify(req.body)) + "}")
+        console.log(msg);
+        appendFile("./request.log", (msg) + "\n", (err) => {if (err) console.error(err)});
+    }
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', 'GET, POST');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    if (req.method === 'OPTIONS') {
-        return res.status(200).json({});
-    }
+    if (req.method === 'OPTIONS') return res.status(200).json({});
     next();
 });
 
-app.get('/', (req, res) => res.sendFile(dir + '/index.html'));
-app.get('/login', (req, res) => res.sendFile(dir + '/index.html'));
-app.get('/404', (req, res) => res.sendFile(dir + '/index.html'));
+indexRoutes.forEach(route => app.get(route, (req, res) => res.sendFile(dir + '/index.html')));
+app.get('/verify', (req, res) => res.sendFile(dir + '/index.html'));
+
 app.get('/favicon.ico', (req, res) => res.sendFile(dir + '/favicon.ico'));
 
 app.post('/handle_data', async (req, res) => {
+    if ((req.body["type"] === "login" || req.body["type"] === "register") && (
+        !req.body.hasOwnProperty("data") ||
+        !["email", "pswd"].every(key => req.body["data"].hasOwnProperty(key)) ||
+        req.body["type"] === "register" && (
+            req.body["data"]["email"].length < credentailsMinLength.email ||
+            req.body["data"]["pswd"].length < credentailsMinLength.pswd
+        )
+    )) return res.status(200).json({status: 400, accepted: false, message: "Bad Request"});
     if (req.body["type"] === "login") {
-        if (!req.body.hasOwnProperty("data") || !["email", "pswd"].every(key => req.body["data"].hasOwnProperty(key))) {
-            res.status(200).json({status: 400, message: "Bad Request"});
-            return;
-        }
-        try {
-            await mongoClient.connect();
-        } catch (error) {
-            console.error('Error: MongoDB connection refused');
-            res.status(200).json({status: 503, accepted: false, message: "Internal Service Unavailable"});
-            return;
-        }
-        const user = await mongoClient.db("Website").collection('Users').findOne({email: req.body["data"]["email"]});
-        await mongoClient.close();
-        if (user === null) {
-            res.status(200).json({status: 401, accepted: false, message: "Invalid Credentials" });
-        } else if (user["email"] === req.body["data"]["email"]) {
+        const user = await mongoClient.findOne({email: req.body["data"]["email"]});
+        if (user === null) return res.status(200).json({status: 401, accepted: false, message: "Invalid Credentials" });
+        else if (user["email"] === req.body["data"]["email"]) {
             pbkdf2(req.body["data"]["pswd"], user["pswd"]["salt"], 1000000, 32, 'sha256', (err, derivedKey) => {
-                if (timingSafeEqual(Buffer.from(user["pswd"]["hash"], 'hex'), derivedKey)) res.status(200).json({status: 200, accepted: true});
-                else res.status(200).json({status: 401, accepted: false, message: "Invalid Credentials"});
+                if (timingSafeEqual(Buffer.from(user["pswd"]["hash"], 'hex'), derivedKey)) return res.status(200).json({status: 200, accepted: true, userData: user});
+                else return res.status(200).json({status: 401, accepted: false, message: "Invalid Credentials"});
             });
-        } else {
-            res.status(200).json({status: 401, accepted: false, message: "Invalid Credentials"});
-        }
+        } else return res.status(200).json({status: 401, accepted: false, message: "Invalid Credentials"});
     } else if (req.body["type"] === "register") {
-        if (!req.body.hasOwnProperty("data") || !["email", "pswd"].every(key => req.body["data"].hasOwnProperty(key))) {
-            res.status(200).json({status: 400, message: "Bad Request"});
-            return;
-        }
-        try {
-            await mongoClient.connect();
-        } catch (error) {
-            console.error('Error: MongoDB connection refused');
-            res.status(200).json({status: 503, accepted: false, message: "Internal Service Unavailable"});
-            return;
-        }
-        const user = await mongoClient.db("Website").collection('Users').findOne({email: req.body["data"]["email"]});
-        await mongoClient.close();
+        const user = await mongoClient.findOne({email: req.body["data"]["email"]});
         if (user !== null) {
-            res.status(200).json({status: 409, accepted: false, message: "Account With Given Credentials Already Exists"});
-        } else {
-            try {
-                await mongoClient.connect();
-            } catch (error) {
-                console.error('Error: MongoDB connection refused');
-                res.status(200).json({status: 503, accepted: false, message: "Internal Service Unavailable"});
-                return;
-            }
+            return res.status(200).json({status: 409, accepted: false, message: "Account With Given Credentials Already Exists"});
+        }
+        else {
             const salt = randomBytes(Math.ceil(8)).toString('hex').slice(0, 16);
             await pbkdf2(req.body["data"]["pswd"], salt, 1000000, 32, 'sha256', async (err, derivedKey) => {
-                await mongoClient.db("Website").collection('Users').insertOne({email: req.body["data"]["email"], pswd: {hash: derivedKey.toString('hex'), salt: salt}});
-                await mongoClient.close();
-                res.status(200).json({status: 201, accepted: true, message: "Account Created Successfully"});
+                const userData = {
+                    email: req.body["data"]["email"],
+                    pswd: {
+                        hash: derivedKey.toString('hex'),
+                        salt: salt
+                    },
+                    emailVerified: false,
+                    activeVerification: null
+                };
+                await mongoClient.insertOne(userData);
+                return res.status(200).json({status: 201, accepted: true, userData: userData});
             });
         }
-    } else {
-        await res.status(200).json({status: 405, accepted: false, message: "Data Handling Method Not Allowed"});
-    }
+    } else return res.status(200).json({status: 405, accepted: false, message: "Type Not Allowed"});
+})
+
+app.post('/email', async (req, res) => {
+    if ((req.body["type"] === "sendVerification" && (
+        !req.body.hasOwnProperty("userData") || !["email", "pswdHash"].every(key => req.body["userData"].hasOwnProperty(key)) ||
+        typeof req.body["userData"]["email"] !== "string" || typeof req.body["userData"]["pswdHash"] !== "string")) ||
+        (req.body["type"] === "finishVerification" && !((req.body.hasOwnProperty("id") && typeof req.body["id"] === "string") ||
+        ["code", "email"].every(key => req.body.hasOwnProperty(key) && typeof req.body[key] === "string"))) ||
+        (req.body["type"] === "cheackVerification" && !req.body.hasOwnProperty("email") && typeof req.body["email"] === "string")
+    ) return res.status(200).json({status: 400, accepted: false, message: "Bad Request"});
+    if (req.body["type"] === "sendVerification") {
+        const user = await mongoClient.findOne({email: req.body["userData"]["email"]});
+        if (user === null) {
+            return res.status(200).json({status: 401, accepted: false, message: "Invalid Credentials"});
+        }
+        if (!timingSafeEqual(Buffer.from(user["pswd"]["hash"], 'hex'), Buffer.from(req.body["userData"]["pswdHash"], 'hex'))) {
+            return res.status(200).json({status: 401, accepted: false, message: "Invalid Credentials"});
+        };
+        if (user["emailVerified"] === true) {
+            return res.status(200).json({status: 409, accepted: false, message: "Email Already Verified"});
+        }
+        if (user["activeVerification"] !== null) {
+            parseVerifyEmailTemplate(user["activeVerification"]["code"], process.env.HTTP_MODE + "://" + WEBSITE + "/verify?token=" + user["activeVerification"]["id"], template => {
+                emailService.sendMail({
+                    from: "fini8",
+                    to: user["email"],
+                    subject: "Confirm your account for fini8",
+                    html: template
+                }, (err, data) => {
+                    if(err) {
+                        logging.error(err, "", "Email")
+                        return res.status(200).json({status: 500, accepted: false, message: "Internal Server Error"});
+                    }
+                    else return res.status(200).json({status: 200, accepted: true, message: "Email Verification Sent"});
+                });
+            });
+        } else {
+            let id, code;
+            let dataExists = true;
+            while(dataExists) {
+                id = randomBytes(8).toString('hex');
+                code = String(Math.floor(100000 + Math.random() * 900000));
+                dataExists = (await mongoClient.findOne({
+                    $or: [
+                        {"activeVerification.id": id},
+                        {"activeVerification.code": code}
+                    ]
+                })) !== null;
+            };
+            try {
+                await mongoClient.updateOne(
+                    {email: user["email"]},
+                    {$set: {activeVerification: {id: id, code: code}}}
+                );
+                parseVerifyEmailTemplate(code.split("").map(Number), process.env.HTTP_MODE + "://" + WEBSITE + "/verify?token=" + id, template => {
+                    emailService.sendMail({
+                        from: "fini8",
+                        to: user["email"],
+                        subject: "Confirm your account for fini8",
+                        html: template
+                    }, (err, data) => {
+                        if(err) {
+                            logging.error(err, "", "Email")
+                            return res.status(200).json({status: 500, accepted: false, message: "Internal Server Error"});
+                        }
+                        else return res.status(200).json({status: 200, accepted: true, message: "Email Verification Sent"});
+                    });
+                });
+            }
+            catch (error) {
+                logging.error(error, "MongoDB document update refused");
+                return res.status(200).json({status: 500, accepted: false, message: "Internal Server Error"});
+            }
+        };
+    } else if (req.body["type"] === "finishVerification") {
+        if (req.body.hasOwnProperty("id")) {
+            if (!(/[0-9A-Fa-f]{16}/.test(req.body.id))) return res.status(200).json({status: 400, accepted: false, message: "Id Not Valid"});
+            else {
+                await mongoClient.findOne({"activeVerification.id": req.body.id}).then(async (user) => {
+                    const resp = await mongoClient.updateOne(
+                        {"activeVerification.id": req.body.id},
+                        {$set: {emailVerified: true, activeVerification: null}}
+                    )
+                    if (resp.matchedCount > 0 && resp.modifiedCount > 0 && resp.acknowledged) {
+                        const len = user.email.indexOf("@");
+                        const txtLen = Math.floor(len*.3);
+                        return res.status(200).json({status: 200, accepted: true, email: "*".repeat(len-(txtLen>=4?4:txtLen)) + user.email.substring(len-(txtLen>=4?4:txtLen))});
+                    }
+                    else if (resp.matchedCount === 0) return res.status(200).json({status: 400, accepted: false, message: "Id Not Valid"});
+                    else return res.status(200).json({status: 500, accepted: false, message: "Internal Error"});
+                });
+            }
+        } else if (req.body.hasOwnProperty("code")) {
+            if (!(/[0-9]{6}/.test(req.body.code))) return res.status(200).json({status: 400, accepted: false, message: "Code Not Valid"});
+            else {
+                await mongoClient.findOne({"email": req.body.email}).then(async (user) => {
+                    if (user === null || user["activeVerification"]["code"] !== req.body.code) return res.status(200).json({status: 400, accepted: false, message: "Code Not Valid"});
+                    const resp = await mongoClient.updateOne(
+                        {"email": req.body.email},
+                        {$set: {emailVerified: true, activeVerification: null}}
+                    )
+                    if (resp.matchedCount > 0 && resp.modifiedCount > 0 && resp.acknowledged) {
+                        const len = user.email.indexOf("@");
+                        const txtLen = Math.floor(len*.3);
+                        return res.status(200).json({status: 200, accepted: true, email: "*".repeat(len-(txtLen>=4?4:txtLen)) + user.email.substring(len-(txtLen>=4?4:txtLen))});
+                    }
+                    else if (resp.matchedCount === 0 && user !== null) return res.status(200).json({status: 400, accepted: false, message: "Code Not Valid"});
+                    else return res.status(200).json({status: 500, accepted: false, message: "Internal Error"});
+                });
+            }
+        } else return res.status(200).json({status: 500, accepted: false, message: "Internal Server Error"});
+    } else if (req.body["type"] === "cheackVerification") {
+        const user = await mongoClient.findOne({email: req.body["email"]});
+        if (user === null || !timingSafeEqual(Buffer.from(user["pswd"]["hash"], 'hex'), Buffer.from(req.body["pswdHash"], 'hex'))) return res.status(200).json({status: 400, accepted: false, message: "Invalid Credentials"});
+        else if (user.emailVerified) return res.status(200).json({status: 200, accepted: true, message: "Email Verified", userData: user});
+        else return res.status(200).json({status: 200, accepted: true, message: "Email Not Verified", userData: user});
+    } else return res.status(200).json({status: 405, accepted: false, message: "Type Not Allowed"});
 })
 
 app.use('/staticAssets', express.static(dir));
 app.use('/assets', express.static(dir + "/assets"));
 
-app.use((req, res, next) => res.status(404).redirect("404"));
+app.use((req, res) => res.status(404).redirect("/404"));
 
-app.listen(port, () => console.log('Server running on port ' + port))
+app.listen(port, async () => {
+    console.log('Server running on port ' + port);
+    try {
+        const mongo = new MongoClient(process.env.MONGODB_URI)
+        mongo.connect()
+        mongoClient = mongo.db("Website").collection('Users')
+    }
+    catch (error) {logging.error(error)}
+});

@@ -1,0 +1,161 @@
+h1 {
+    color: #ffffff;
+    font-weight: 700;
+    margin: 0;
+    font-size: 35px;
+    text-align: center;
+}
+
+#emailText {
+    color: #8f8f8f;
+    text-align: center;
+    margin: auto;
+    max-width: 320px;
+}
+
+.main {
+    background-color: rgba(31, 31, 31, 0.8);
+    border-radius: 15px;
+    padding: 25px 30px 25px 30px;
+    backdrop-filter: blur(1px);
+}
+
+#resendClock {
+    color: #606060;
+}
+
+#resendLink {
+    transition: all 0.2s;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#resendLink:hover {
+    color: #ffffff;
+}
+
+#resendLinkOuter {
+    width: fit-content;
+    color: #2ca87f;
+    display: flex;
+    margin: auto;
+}
+
+.loadingMini {
+    border-radius: 50%;
+    animation: rotate 1s linear infinite;
+    height: 18px;
+    width: 18px;
+}
+
+.loadingMini::before {
+    content: "";
+    box-sizing: border-box;
+    inset: 3px;
+    border-radius: 50%;
+    border: 2px solid #2ca87f;
+    animation: prixClipFix 2s linear infinite;
+    position: absolute;
+}
+
+@keyframes rotate {
+    100% {transform: rotate(360deg)};
+}
+
+@keyframes prixClipFix {
+    0% {clip-path: polygon(50% 50%, 0 0, 0 0, 0 0, 0 0, 0 0)};
+    25% {clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 0, 100% 0, 100% 0)};
+    50% {clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 100% 100%, 100% 100%)};
+    75% {clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 100%)};
+    100% {clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 0)};
+}
+
+.codeInput {
+    transition: border-color 0.2s;
+    width: 37px;
+    height: 45px;
+    border: 2px solid #8f8f8f;
+    border-radius: 10px;
+    background-color: transparent;
+    color: #ffffff8e;
+    font-size: 37px;
+    text-align: center;
+}
+
+.codeInput:focus {
+    border-color:#dddddd;
+    border-width: 3px;
+    margin: -1px;
+}
+
+#emailInputContainer {
+    display: flex;
+    flex-direction: row;
+    margin: auto;
+    margin-top: 2px;
+    margin-bottom: 5px;
+    justify-content: space-between;
+    width: 310px;
+}
+
+#codeText {
+    margin: 0;
+    color: #ffffff;
+    margin-top: 20px;
+    margin-left: 20px;
+}
+
+button {
+    margin-top: 25px;
+    border: none;
+    height: 38px;
+    width: 150px;
+    border-radius: 8px;
+    font-size: 17px;
+    transition: all 1s;
+    background: #38d39f;
+    box-shadow: 2px 2px 8px #38d39f70;
+    color: #ffffffcc;
+    cursor: pointer;
+}
+
+#resendLinkMiddle.disabled {
+    cursor: not-allowed;
+}
+
+#resendLink.disabled {
+    pointer-events: none;
+    color: #2ca87f;
+}
+
+#buttonLoadingMini::before {
+    border-color: #ffffff;
+}
+
+#verifyButton.disabled {
+    pointer-events: none;
+}
+
+#verifyButtonOuter.disabled {
+    cursor: not-allowed;
+}
+
+#verifyButton:disabled {
+    background-color: #606060;
+    box-shadow: none;
+    color: #8f8f8f;
+    cursor: not-allowed;
+}
+
+.shake {
+    animation: shake 0.4s;
+}
+
+@keyframes shake{
+    0% { transform: translateX(0px); }
+    20% { transform: translateX(2.5px); }
+    40% { transform: translateX(-5px); }
+    60% { transform: translateX(5px); }
+    80% { transform: translateX(-2.5px); }
+    100% { transform: translateX(0px); }
+}
