@@ -1,17 +1,33 @@
 <div id="emailVerification" class="main" style="display: none;">
     <h1>Verify email address</h1>
     <p id="emailText">We sent the verification email to </p>
+    <h2 id="codeText">Code:</h2>
     <div id="emailInputContainer">
-        <input class="codeInput" [(ngModel)]="code[0]" (ngModelChange)="checkCode()" id="codeInput0" type="text" inputmode="numeric" pattern="[0-9]+">
-        <input class="codeInput" [(ngModel)]="code[1]" (ngModelChange)="checkCode()" id="codeInput1" type="text" inputmode="numeric" pattern="[0-9]+">
-        <input class="codeInput" [(ngModel)]="code[2]" (ngModelChange)="checkCode()" id="codeInput2" type="text" inputmode="numeric" pattern="[0-9]+">
-        <input class="codeInput" [(ngModel)]="code[3]" (ngModelChange)="checkCode()" id="codeInput3" type="text" inputmode="numeric" pattern="[0-9]+">
-        <input class="codeInput" [(ngModel)]="code[4]" (ngModelChange)="checkCode()" id="codeInput4" type="text" inputmode="numeric" pattern="[0-9]+">
-        <input class="codeInput" [(ngModel)]="code[5]" (ngModelChange)="checkCode()" id="codeInput5" type="text" inputmode="numeric" pattern="[0-9]+">
+        <input class="codeInput" id="codeInput0" type="text" inputmode="numeric" [(ngModel)]="code[0]" maxlength="1"
+            (keydown.arrowright)="skipField('right', 0, $event)" (keydown.arrowleft)="skipField('left', 0, $event)" (paste)="checkCode(0, 'paste', null, $event)"
+            (keydown.backspace)="checkCode(0, 'delete', $event)" (ngModelChange)="checkCode(0)">
+        <input class="codeInput" id="codeInput1" type="text" inputmode="numeric" [(ngModel)]="code[1]" maxlength="1"
+            (keydown.arrowright)="skipField('right', 1, $event)" (keydown.arrowleft)="skipField('left', 1, $event)" (paste)="checkCode(1, 'paste', null, $event)"
+            (keydown.backspace)="checkCode(1, 'delete', $event)" (ngModelChange)="checkCode(1)">
+        <input class="codeInput" id="codeInput2" type="text" inputmode="numeric" [(ngModel)]="code[2]" maxlength="1"
+            (keydown.arrowright)="skipField('right', 2, $event)" (keydown.arrowleft)="skipField('left', 2, $event)" (paste)="checkCode(2, 'paste', null, $event)"
+            (keydown.backspace)="checkCode(2, 'delete', $event)" (ngModelChange)="checkCode(2)">
+        <input class="codeInput" id="codeInput3" type="text" inputmode="numeric" [(ngModel)]="code[3]" maxlength="1"
+            (keydown.arrowright)="skipField('right', 3, $event)" (keydown.arrowleft)="skipField('left', 3, $event)" (paste)="checkCode(3, 'paste', null, $event)"
+            (keydown.backspace)="checkCode(3, 'delete', $event)" (ngModelChange)="checkCode(3)">
+        <input class="codeInput" id="codeInput4" type="text" inputmode="numeric" [(ngModel)]="code[4]" maxlength="1"
+            (keydown.arrowright)="skipField('right', 4, $event)" (keydown.arrowleft)="skipField('left', 4, $event)" (paste)="checkCode(4, 'paste', null, $event)"
+            (keydown.backspace)="checkCode(4, 'delete', $event)" (ngModelChange)="checkCode(4)">
+        <input class="codeInput" id="codeInput5" type="text" inputmode="numeric" [(ngModel)]="code[5]" maxlength="1"
+            (keydown.arrowright)="skipField('right', 5, $event)" (keydown.arrowleft)="skipField('left', 5, $event)" (paste)="checkCode(5, 'paste', null, $event)"
+            (keydown.backspace)="checkCode(5, 'delete', $event)" (ngModelChange)="checkCode(5)">
     </div>
     <div id="resendLinkOuter">
-        <a (click)="sendVerificationEmail('resend')" id="resendLink">Didn't receive the email?</a>
+        <div id="resendLinkMiddle"><a (click)="sendVerificationEmail('resend')" id="resendLink">Didn't receive the email?</a></div>
         <span style="display: none;" id="resendClock"></span>
-        <div id="loadingMini"></div>
+        <div id="loadingMini" class="loadingMini"></div>
     </div>
+    <div id="verifyButtonOuter" style="margin: auto; width: fit-content;"><button id="verifyButton" (click)="verifyCode()" disabled>
+        <span id="verifyText">Continue</span><div class="loadingMini" id="buttonLoadingMini" style="margin: auto; display: none;"></div>
+    </button></div>
 </div>

@@ -3,10 +3,10 @@
         <form (ngSubmit)="onSubmit($event, 'login')" autocomplete="off">
             <h1>Login</h1>
             <label for="email" class="subtitle">Email</label>
-            <input type="text" name="email" style="margin-bottom: 22px;" class="emailInput" [(ngModel)]="loginEmail" (ngModelChange)="checkCredentials()"><br>
+            <input type="text" name="email" style="margin-bottom: 22px;" class="emailInput" [(ngModel)]="credentials.login.email" (ngModelChange)="checkCredentials()"><br>
             <label for="passwordInput" class="subtitle">Password</label>
             <div id="passwordInputDiv" class="passwordInputDiv">
-                <input type="password" name="pass" class="pswdInput" id="passwordInputLogin" [(ngModel)]="loginPswd" (ngModelChange)="checkCredentials()">
+                <input type="password" name="pass" class="pswdInput" id="passwordInputLogin" [(ngModel)]="credentials.login.pswd" (ngModelChange)="checkCredentials()">
                 <button type="button" (click)="revealPassword($event, 'Login')" id="revealPassword" class="actionButton">
                     <img id="revealPasswordImageLogin" class="buttonImage" src="/assets/img/eye.png" alt="Reveal password button">
                     <img id="hidePasswordImageLogin" class="buttonImage hidePasswordImage" src="/assets/img/eye_2.png" alt="Hide password button" style="display: none;">
@@ -26,7 +26,7 @@
                         name="email"
                         class="emailInput pswdInput"
                         id="emailInputRegistration"
-                        [(ngModel)]="registerEmail"
+                        [(ngModel)]="credentials.register.email"
                         (ngModelChange)="checkEmail()"
                         (blur)="checkEmail()"
                         style="position: static; margin-bottom: -5px; border: none;"
@@ -52,7 +52,7 @@
                     type="password"
                     name="pass"
                     id="passwordInputRegistration"
-                    [(ngModel)]="registerPswd"
+                    [(ngModel)]="credentials.register.pswd"
                     (ngModelChange)="checkPswd()"
                     (focus)="checkPswd()"
                     (blur)="checkPswd()"
@@ -83,10 +83,10 @@
         </form>
     </div>
 </div>
-<app-verification (outputEvent)="addNotification($event.message, $event.status)"></app-verification>
+<app-verification (notify)="addNotification($event.message, $event.status)"></app-verification>
 <app-loading></app-loading>
 <div id="notificationContainer">
     <ng-container *ngFor="let notification of notifications">
-        <app-notification [notification]="notification" [notifications]="notifications" (outputEvent)="removeNotification($event)"></app-notification>
+        <app-notification [notification]="notification" (removeNotification)="removeNotification($event)"></app-notification>
     </ng-container>
 </div>

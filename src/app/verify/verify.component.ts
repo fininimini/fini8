@@ -27,7 +27,7 @@ export class VerifyComponent implements OnInit {
             } else {
                 this.http.post<HandleDataResponse>(
                     "/email",
-                    {type: "finishVerification", id: params['token']!==undefined?params['token']:null},
+                    {type: "finishVerification", id: params['token']},
                     {headers: new HttpHeaders({"Content-Type": "application/json"})}
                 ).subscribe((response) => {
                     loadingComponent.loadingStop();

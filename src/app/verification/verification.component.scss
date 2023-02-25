@@ -41,14 +41,14 @@ h1 {
     margin: auto;
 }
 
-#loadingMini {
+.loadingMini {
     border-radius: 50%;
     animation: rotate 1s linear infinite;
     height: 18px;
     width: 18px;
 }
 
-#loadingMini::before {
+.loadingMini::before {
     content: "";
     box-sizing: border-box;
     inset: 3px;
@@ -71,6 +71,7 @@ h1 {
 }
 
 .codeInput {
+    transition: border-color 0.2s;
     width: 37px;
     height: 45px;
     border: 2px solid #8f8f8f;
@@ -81,12 +82,80 @@ h1 {
     text-align: center;
 }
 
+.codeInput:focus {
+    border-color:#dddddd;
+    border-width: 3px;
+    margin: -1px;
+}
+
 #emailInputContainer {
     display: flex;
     flex-direction: row;
     margin: auto;
-    margin-top: 20px;
+    margin-top: 2px;
     margin-bottom: 5px;
     justify-content: space-between;
     width: 310px;
+}
+
+#codeText {
+    margin: 0;
+    color: #ffffff;
+    margin-top: 20px;
+    margin-left: 20px;
+}
+
+button {
+    margin-top: 25px;
+    border: none;
+    height: 38px;
+    width: 150px;
+    border-radius: 8px;
+    font-size: 17px;
+    transition: all 1s;
+    background: #38d39f;
+    box-shadow: 2px 2px 8px #38d39f70;
+    color: #ffffffcc;
+    cursor: pointer;
+}
+
+#resendLinkMiddle.disabled {
+    cursor: not-allowed;
+}
+
+#resendLink.disabled {
+    pointer-events: none;
+    color: #2ca87f;
+}
+
+#buttonLoadingMini::before {
+    border-color: #ffffff;
+}
+
+#verifyButton.disabled {
+    pointer-events: none;
+}
+
+#verifyButtonOuter.disabled {
+    cursor: not-allowed;
+}
+
+#verifyButton:disabled {
+    background-color: #606060;
+    box-shadow: none;
+    color: #8f8f8f;
+    cursor: not-allowed;
+}
+
+.shake {
+    animation: shake 0.4s;
+}
+
+@keyframes shake{
+    0% { transform: translateX(0px); }
+    20% { transform: translateX(2.5px); }
+    40% { transform: translateX(-5px); }
+    60% { transform: translateX(5px); }
+    80% { transform: translateX(-2.5px); }
+    100% { transform: translateX(0px); }
 }
