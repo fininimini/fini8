@@ -21,10 +21,8 @@ export class VerifyComponent implements OnInit {
         loadingComponent.loadingActivate(null, "Verifying your email address");
         this.activatedRoute.queryParams.subscribe(params => {
             if (params['token']===undefined) this.router.navigate(['/']);
-            else if (params['token'].length !== 16 || !(/[0-9A-Fa-f]{16}/.test(params['token']))) {
-                loadingComponent.loadingStop();
-                (document.getElementById("fail") as HTMLDivElement).style.display = "";
-            } else {
+            else if (!(/[0-9A-Fa-f]{16}/.test(params['token']))) this.router.navigate(['/']);
+            else {
                 this.http.post<HandleDataResponse>(
                     "/email",
                     {type: "finishVerification", id: params['token']},
