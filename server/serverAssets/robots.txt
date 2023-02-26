@@ -33,4 +33,4 @@ Disallow: /
 User-agent: *
 Disallow:
 Crawl-delay: 5
-Sitemap: fini8.eu/siteMap.xml
+Sitemap: http://fini8.eu/siteMap.xml
