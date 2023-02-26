@@ -62,17 +62,17 @@ if (process.env.RATE_LIMIT_ENABLED === undefined ? true : process.env.RATE_LIMIT
         else if (connected[ip] === undefined) {
             connected[ip] = {requestsCounter: 1};
             setTimeout(() => {delete connected[ip]}, rateLimit.requestsLimitTime);
-            if (rateLimited[ip] !== undefined && rateLimited[ip].currentlyRateLimited) res.status(rateLimit.responseStatusCode).sendFile(__dirname + "/serverAssets/rateLimit.html");
+            if (rateLimited[ip] !== undefined && rateLimited[ip].rateLimited) res.status(rateLimit.responseStatusCode).sendFile(__dirname + "/serverAssets/rateLimit.html");
             else next()
         }
         else {
-            if (rateLimited[ip] === undefined || (rateLimited[ip] !== undefined && !rateLimited[ip].currentlyRateLimited)) connected[ip].requestsCounter++;
+            if (rateLimited[ip] === undefined || (rateLimited[ip] !== undefined && !rateLimited[ip].rateLimited)) connected[ip].requestsCounter++;
             if (rateLimited[ip] === undefined) {
                 if (connected[ip].requestsCounter > rateLimit.requestsLimit) {
                     rateLimited[ip] = {rateLimitsCounter: 1, rateLimited: true};
                     logging.log(`Rate limited IP: ${ip.substr(0, 7) == "::ffff:" ? ip.substr(7) : ip}`);
                     setTimeout(() => {delete rateLimited[ip]}, rateLimit.rateLimitDeleteTime);
-                    setTimeout(() => {rateLimited[ip].currentlyRateLimited = false}, rateLimit.requestsLimitTime);
+                    setTimeout(() => {rateLimited[ip].rateLimited = false}, rateLimit.requestsLimitTime);
                     res.status(rateLimit.responseStatusCode).sendFile(__dirname + "/serverAssets/rateLimit.html");
                 }
                 else next();
@@ -83,11 +83,11 @@ if (process.env.RATE_LIMIT_ENABLED === undefined ? true : process.env.RATE_LIMIT
                     setTimeout(() => {delete suspended[ip]}, rateLimit.suspendTime);
                     res.status(rateLimit.responseStatusCode).send("You have been temporarily suspended from making requests.");
                 }
-                else if (rateLimited[ip].currentlyRateLimited) return res.status(rateLimit.responseStatusCode).sendFile(__dirname + "/serverAssets/rateLimit.html");
-                else if (!rateLimited[ip].currentlyRateLimited && connected[ip].requestsCounter > rateLimit.requestsLimit) {
-                    rateLimited[ip].currentlyRateLimited = true;
+                else if (rateLimited[ip].rateLimited) return res.status(rateLimit.responseStatusCode).sendFile(__dirname + "/serverAssets/rateLimit.html");
+                else if (!rateLimited[ip].rateLimited && connected[ip].requestsCounter > rateLimit.requestsLimit) {
+                    rateLimited[ip].rateLimited = true;
                     rateLimited[ip].rateLimitsCounter++;
-                    setTimeout(() => {rateLimited[ip].currentlyRateLimited = false; delete connected[ip]}, rateLimit.requestsLimitTime);
+                    setTimeout(() => {rateLimited[ip].rateLimited = false; delete connected[ip]}, rateLimit.requestsLimitTime);
                 } else next();
             }
         }
@@ -118,7 +118,7 @@ app.post('/handle_data', async (req, res) => {
     req.body["type"] === "register" && (req.body["data"]["email"].length < credentailsMinLength.email || req.body["data"]["pswd"].length < credentailsMinLength.pswd)
     )) return res.status(200).json({status: 400, accepted: false, message: "Bad Request"});
     if (req.body["type"] === "login") {
-        const user = await mongoClient.findOne({email: req.body["data"]["email"]});
+        const user = await mongoClient.findOne({email: {$eq: req.body["data"]["email"]}});
         if (user === null) return res.status(200).json({status: 401, accepted: false, message: "Invalid Credentials" });
         else if (user["email"] === req.body["data"]["email"]) {
             pbkdf2(req.body["data"]["pswd"], user["pswd"]["salt"], 1000000, 32, 'sha256', (err, derivedKey) => {
@@ -127,7 +127,7 @@ app.post('/handle_data', async (req, res) => {
             });
         } else return res.status(200).json({status: 401, accepted: false, message: "Invalid Credentials"});
     } else if (req.body["type"] === "register") {
-        const user = await mongoClient.findOne({email: req.body["data"]["email"]});
+        const user = await mongoClient.findOne({email: {$eq: req.body["data"]["email"]}});
         if (user !== null) return res.status(200).json({status: 409, accepted: false, message: "Account With Given Credentials Already Exists"});
         else {
             const salt = randomBytes(Math.ceil(8)).toString('hex').slice(0, 16);
@@ -150,7 +150,7 @@ app.post('/email', async (req, res) => {
         (req.body["type"] === "cheackVerification" && !req.body.hasOwnProperty("email") && typeof req.body["email"] === "string")
     ) return res.status(200).json({status: 400, accepted: false, message: "Bad Request"});
     if (req.body["type"] === "sendVerification") {
-        const user = await mongoClient.findOne({email: req.body["userData"]["email"]});
+        const user = await mongoClient.findOne({email: {$eq: req.body["userData"]["email"]}});
         if (user === null) return res.status(200).json({status: 401, accepted: false, message: "Invalid Credentials"});
         if (!timingSafeEqual(Buffer.from(user["pswd"]["hash"], 'hex'), Buffer.from(req.body["userData"]["pswdHash"], 'hex'))) {
             return res.status(200).json({status: 401, accepted: false, message: "Invalid Credentials"});
@@ -184,8 +184,8 @@ app.post('/email', async (req, res) => {
         if (req.body.hasOwnProperty("id")) {
             if (!(/[0-9A-Fa-f]{16}/.test(req.body.id))) return res.status(200).json({status: 400, accepted: false, message: "Id Not Valid"});
             else {
-                await mongoClient.findOne({"activeVerification.id": req.body.id}).then(async (user) => {
-                    const resp = await mongoClient.updateOne({"activeVerification.id": req.body.id}, {$set: {emailVerified: true, activeVerification: null}})
+                await mongoClient.findOne({"activeVerification.id": {$eq: req.body.id}}).then(async (user) => {
+                    const resp = await mongoClient.updateOne({"activeVerification.id": {$eq: req.body.id}}, {$set: {emailVerified: true, activeVerification: null}})
                     if (resp.matchedCount > 0 && resp.modifiedCount > 0 && resp.acknowledged) {
                         const len = user.email.indexOf("@"); const txtLen = Math.floor(len*.3);
                         return res.status(200).json({status: 200, accepted: true, email: "*".repeat(len-(txtLen>=4?4:txtLen)) + user.email.substring(len-(txtLen>=4?4:txtLen))});
@@ -197,9 +197,9 @@ app.post('/email', async (req, res) => {
         } else if (req.body.hasOwnProperty("code")) {
             if (!(/[0-9]{6}/.test(req.body.code))) return res.status(200).json({status: 400, accepted: false, message: "Code Not Valid"});
             else {
-                await mongoClient.findOne({"email": req.body.email}).then(async (user) => {
+                await mongoClient.findOne({"email": {$eq: req.body.email}}).then(async (user) => {
                     if (user === null || user["activeVerification"]["code"] !== req.body.code) return res.status(200).json({status: 400, accepted: false, message: "Code Not Valid"});
-                    const resp = await mongoClient.updateOne({"email": req.body.email}, {$set: {emailVerified: true, activeVerification: null}})
+                    const resp = await mongoClient.updateOne({"email": {$eq: req.body.email}}, {$set: {emailVerified: true, activeVerification: null}})
                     if (resp.matchedCount > 0 && resp.modifiedCount > 0 && resp.acknowledged) {
                         const len = user.email.indexOf("@"); const txtLen = Math.floor(len*.3);
                         return res.status(200).json({status: 200, accepted: true, email: "*".repeat(len-(txtLen>=4?4:txtLen)) + user.email.substring(len-(txtLen>=4?4:txtLen))});
@@ -210,7 +210,7 @@ app.post('/email', async (req, res) => {
             }
         } else return res.status(200).json({status: 500, accepted: false, message: "Internal Server Error"});
     } else if (req.body["type"] === "cheackVerification") {
-        const user = await mongoClient.findOne({email: req.body["email"]});
+        const user = await mongoClient.findOne({email: {$eq: req.body["email"]}});
         if (user === null || !timingSafeEqual(Buffer.from(user["pswd"]["hash"], 'hex'), Buffer.from(req.body["pswdHash"], 'hex'))) return res.status(200).json({status: 400, accepted: false, message: "Invalid Credentials"});
         else if (user.emailVerified) return res.status(200).json({status: 200, accepted: true, message: "Email Verified", userData: user});
         else return res.status(200).json({status: 200, accepted: true, message: "Email Not Verified", userData: user});
