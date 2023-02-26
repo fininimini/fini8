@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Fini8</title>
+        <meta name="viewport" charset="UTF-8" content="width=device-width, initial-scale=1.0">
+        <style>
+            #index-background {
+                background: repeating-linear-gradient(45deg, black, black 10px, #444 10px, #444 11px);
+                font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+                width: 100dvw;
+                height: 100dvh;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin: 0;
+                -webkit-user-select: none;
+                -khtml-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                -o-user-select: none;
+                user-select: none;
+                overflow-x: auto;
+                overflow-y: auto;
+            }
+            #index-background:not(.user-is-tabbing) button:focus,
+            #index-background:not(.user-is-tabbing) select:focus,
+            #index-background:not(.user-is-tabbing) input:focus,
+            #index-background:not(.user-is-tabbing) textarea:focus {
+                outline: none
+            }
+            #index-body {
+                width: 100dvw;
+                height: 100dvh;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            .main {
+                background-color: rgba(31, 31, 31, 0.8);
+                border-radius: 15px;
+                padding: 0 30px 0 30px;
+                margin: 15px;
+                height: fit-content;
+                backdrop-filter: blur(1px);
+            }
+            h1 {
+                color: #ffffff;
+                font-size: 38px;
+                font-weight: 700;
+                margin-bottom: 10px;
+            }
+            p {
+                color: #8f8f8f;
+                text-align: center;
+                margin: auto;
+                max-width: 350px;
+                margin-bottom: 20px;
+            }
+        </style>
+    </head>
+    <body id="index-background">
+        <div id="index-body">
+            <div class="main">
+                <h1>You got rate limited!</h1>
+                <p>Be warned! Please slow down your actions, or you will be suspended.</p>
+            </div>
+        </div>
+    </body>
+</html>
