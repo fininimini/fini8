@@ -42,16 +42,18 @@ const app = express();
 const emailService = nodeMailer.createTransport({service: 'gmail', auth: {user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS}});
 let mongoClient;
 
+app.disable('x-powered-by');
 //Headers
 app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Origin', process.env.INSECURE_HTTP_ACCESS === undefined ?
+        `${process.env.HTTP_MODE}://fini8.eu` : process.env.INSECURE_HTTP_ACCESS === "true" ? "*" : `${process.env.HTTP_MODE}://fini8.eu`);
     res.header('Access-Control-Allow-Methods', 'GET, POST');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     if (req.method === 'OPTIONS') return res.status(200).json({});
     next();
 });
 // Rate Limiter
-if (process.env.RATELIMITENABLED === undefined ? true : process.env.RATELIMITENABLED === "true") {
+if (process.env.RATE_LIMIT_ENABLED === undefined ? true : process.env.RATE_LIMIT_ENABLED === "true") {
     const rateLimited = {}; const connected = {}; const suspended = [];
     const rateLimit = {requestsLimitTime: 15 * 1000, requestsLimit: 50, responseStatusCode: 429, rateLimitDeleteTime: 3 * 60 * 60 * 1000, rateLimitLimits: 3 , supendTime: 48 * 60 * 1000};
     app.use((req, res, next) => {
@@ -188,7 +190,7 @@ app.post('/email', async (req, res) => {
                         const len = user.email.indexOf("@"); const txtLen = Math.floor(len*.3);
                         return res.status(200).json({status: 200, accepted: true, email: "*".repeat(len-(txtLen>=4?4:txtLen)) + user.email.substring(len-(txtLen>=4?4:txtLen))});
                     }
-                    else if (resp.matchedCount === 0) return res.status(200).json({status: 400, accepted: false, message: "Id Not Valid"});
+                    else if (resp.matchedCount === 0) return res.status(200).json({status: 406, accepted: false, message: "Id Not Valid"});
                     else return res.status(200).json({status: 500, accepted: false, message: "Internal Error"});
                 });
             }
@@ -216,6 +218,8 @@ app.post('/email', async (req, res) => {
 })
 
 // Assets
+app.get('/siteMap.xml', (req, res) => res.sendFile(__dirname + '/serverAssets/siteMap.xml'));
+app.get('/robots.txt', (req, res) => res.sendFile(__dirname + '/serverAssets/robots.txt'));
 app.get('/favicon.ico', (req, res) => res.sendFile(dir + '/favicon.ico'));
 app.use('/staticAssets', express.static(dir));
 app.use('/assets', express.static(dir + "/assets"));
