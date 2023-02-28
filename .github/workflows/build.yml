@@ -28,6 +28,13 @@ jobs:
       - name: Move app files
         run: mv /home/runner/work/fini8/fini8/dist/fini8 /home/runner/work/fini8/fini8/server
 
+      - name: Auto Minify
+        uses: nizarmah/auto-minify@v2.1
+        with:
+          overwrite: true
+          directory: 'server'
+          js_engine: 'uglify-js'
+
       - name: Upload build files
         uses: actions/upload-artifact@v3
         with:
