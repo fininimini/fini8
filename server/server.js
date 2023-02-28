@@ -49,7 +49,6 @@ app.use((req, res, next) => {
         `${process.env.HTTP_MODE}://fini8.eu` : process.env.INSECURE_HTTP_ACCESS === "true" ? "*" : `${process.env.HTTP_MODE}://fini8.eu`);
     res.header('Access-Control-Allow-Methods', 'GET, POST');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    if (req.method === 'OPTIONS') return res.status(200).json({});
     next();
 });
 // Rate Limiter
@@ -93,6 +92,9 @@ if (process.env.RATE_LIMIT_ENABLED === undefined ? true : process.env.RATE_LIMIT
         }
     });
 }
+
+app.use((req, res, next) => {if (req.method === 'OPTIONS') return res.status(200).json({}); next()});
+
 //Body Parser
 app.use(bodyParser.json());
 //Logging
