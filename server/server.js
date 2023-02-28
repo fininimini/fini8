@@ -61,36 +61,36 @@ if (process.env.RATE_LIMIT_ENABLED === undefined ? true : process.env.RATE_LIMIT
         else if (connected[ip] === undefined) {
             connected[ip] = {requestsCounter: 1};
             setTimeout(() => {delete connected[ip]}, rateLimit.requestsLimitTime);
-            if (rateLimited[ip] !== undefined && rateLimited[ip].rateLimited) res.status(rateLimit.responseStatusCode).sendFile(__dirname + "/serverAssets/rateLimit.html");
-            else next()
+            if (rateLimited[ip] !== undefined && rateLimited[ip].rateLimited) return res.status(rateLimit.responseStatusCode).sendFile(__dirname + "/serverAssets/rateLimit.html");
+            next()
         }
         else {
-            if (rateLimited[ip] === undefined || (rateLimited[ip] !== undefined && !rateLimited[ip].rateLimited)) connected[ip].requestsCounter++;
-            if (rateLimited[ip] === undefined) {
+            const inRateLimited = rateLimited[ip] === undefined
+            if (inRateLimited || (!inRateLimited && !rateLimited[ip].rateLimited)) connected[ip].requestsCounter++;
+            if (inRateLimited) {
                 if (connected[ip].requestsCounter > rateLimit.requestsLimit) {
                     rateLimited[ip] = {rateLimitsCounter: 1, rateLimited: true};
                     logging.log(`Rate limited IP: ${ip.substr(0, 7) == "::ffff:" ? ip.substr(7) : ip}`);
                     setTimeout(() => {delete rateLimited[ip]}, rateLimit.rateLimitDeleteTime);
                     setTimeout(() => {rateLimited[ip].rateLimited = false}, rateLimit.requestsLimitTime);
-                    res.status(rateLimit.responseStatusCode).sendFile(__dirname + "/serverAssets/rateLimit.html");
+                    return res.status(rateLimit.responseStatusCode).sendFile(__dirname + "/serverAssets/rateLimit.html");
                 }
-                else next();
+                next();
             } else {
                 if (rateLimited[ip].rateLimitsCounter > rateLimit.rateLimitLimits) {
                     suspended.push(ip);
                     logging.error(`Suspended IP: ${ip.substr(0, 7) == "::ffff:" ? ip.substr(7) : ip}`, "Too many requests", "Rate Limiter");
                     setTimeout(() => {delete suspended[ip]}, rateLimit.suspendTime);
-                    res.status(rateLimit.responseStatusCode).send("You have been temporarily suspended from making requests.");
+                    return res.status(rateLimit.responseStatusCode).send("You have been temporarily suspended from making requests.");
                 }
                 else if (rateLimited[ip].rateLimited) return res.status(rateLimit.responseStatusCode).sendFile(__dirname + "/serverAssets/rateLimit.html");
                 else if (!rateLimited[ip].rateLimited && connected[ip].requestsCounter > rateLimit.requestsLimit) {
-                    rateLimited[ip].rateLimited = true;
-                    rateLimited[ip].rateLimitsCounter++;
+                    rateLimited[ip].rateLimited = true; rateLimited[ip].rateLimitsCounter++;
                     setTimeout(() => {rateLimited[ip].rateLimited = false; delete connected[ip]}, rateLimit.requestsLimitTime);
                 } else next();
             }
         }
-    });
+    })
 }
 
 app.use((req, res, next) => {if (req.method === 'OPTIONS') return res.status(200).json({}); next()});
