@@ -6,6 +6,7 @@ const { MongoClient } = require('mongodb');
 const { pbkdf2, timingSafeEqual, randomBytes } = require('crypto');
 const dotEnv = require('dotenv').config({path: './.env'});
 const nodeMailer = require('nodemailer');
+const compression = require('compression')
 
 const port = process.env.PORT || 8080;
 const dir = __dirname + "/fini8";
@@ -92,6 +93,9 @@ if (process.env.RATE_LIMIT_ENABLED === undefined ? true : process.env.RATE_LIMIT
         }
     })
 }
+
+//Compression
+app.use(compression());
 
 app.use((req, res, next) => {if (req.method === 'OPTIONS') return res.status(200).json({}); next()});
 
@@ -232,4 +236,4 @@ app.listen(port, async () => {
     console.log('Server running on port ' + port);
     try {const mongo = new MongoClient(process.env.MONGODB_URI); mongo.connect(); mongoClient = mongo.db("Website").collection('Users')}
     catch (error) {logging.error(error)}
-});
+}, );
