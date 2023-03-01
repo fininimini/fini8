@@ -3,6 +3,7 @@ This is a website i (fininimini) am building in my free time using angular and e
 
 ## To be fixed
 - When notifications are being displayed too fast, some aren't getting removed
+- UI issues on mobile
 
 ## Interfaces
 ```Ts
